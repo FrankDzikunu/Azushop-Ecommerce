@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import "./Cart.css";
 
 
@@ -57,7 +58,9 @@ const Cart = () => {
         <div className="cart-summary">
           <p>Items: {cartItems.length}</p>
           <p>Total: ${cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0).toFixed(2)}</p>
+          <Link to="/checkout">
           <button className="checkout-btn">Proceed to checkout</button>
+          </Link>
         </div>
       </div>
     </div>

@@ -1,0 +1,162 @@
+.checkout-container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+  }
+  
+  .breadcrumb {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+  
+  .breadcrumb .active {
+    font-weight: bold;
+  }
+  
+  .checkout-content {
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+  }
+  
+  .billing-section {
+    flex: 1;
+  }
+  
+  .billing-section h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    text-align: left;
+  }
+  .billing-form {
+    background: #F9FBFC;
+    padding: 50px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    justify-content: space-between;
+    gap: 20px;
+    display: flex;  
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .billing-form input {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #E6EFF5;
+  }
+  
+  .summary-section {
+    flex: 1;
+  }
+  .summary-section h3 {
+    text-align: left;
+  } 
+  
+  .summary-box {
+    background: #F9FBFC;
+    padding: 20px;
+    border-radius: 5px;
+  }
+  
+  .product-item {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.322);
+  }
+  
+  .productimage {
+    height: 60px;
+    object-fit: cover;
+  }
+  .productinfo {
+    flex: 1;
+    justify-items: last baseline;
+    margin-bottom: 20px;
+  }
+  
+  .productinfo .producttitle {
+    font-weight: bold;
+    margin: 5px 0;
+  }
+  
+  .productinfo .ProductBrand {
+    font-size: 12px;
+    color: #777;
+    margin: 0;
+  }
+  .productinfo .ProductBrand span {
+    font-size: 14px;
+    color: #000000;
+  }
+  .productinfo .productprice {
+    font-weight: bold;
+    margin: 0;
+  }
+  .pricingdetails {
+    border-bottom: 1px solid rgba(128, 128, 128, 0.322);
+    padding-bottom: 20px;
+    margin-bottom: 10px;
+  }
+  .pricingdetails p {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+  }
+  .pricingdetails h2 {
+    font-weight: bold;
+    margin-bottom: 5px;
+    font-size: 20px;
+    text-align: left;
+  }
+  .pricingtotal {
+    border-bottom: 1px solid rgba(128, 128, 128, 0.322);
+    padding: 20px 0;
+  }
+  .pricingtotal p {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+  }
+  .total {
+    font-weight: bold;
+  }
+  
+  .payment-method {
+    margin-top: 20px;
+  }
+  
+  .payment-method h4 {
+    font-size: 16px;
+    margin-bottom: 10px;
+    text-align: left;
+  }
+  
+  .payment-method label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .place-order-btn {
+    width: 100%;
+    background-color: #0056b3;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 15px;
+  }
+  
+  .place-order-btn:hover {
+    background-color: #004494;
+  }
+  
