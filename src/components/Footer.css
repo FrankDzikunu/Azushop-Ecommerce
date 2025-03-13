@@ -1,0 +1,28 @@
+.footer {
+    margin: 0 5%;
+    background-color: white;
+    padding: 20px 0;
+    text-align: center;
+    border-top: 1px solid #ddd;
+  }
+  
+  .footer-content {
+    justify-content: space-between;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .footer-payment img {
+    width: 50px;
+    height: auto;
+    margin: auto 10px;
+    margin-left: 0;
+  }
+  
+  .footer-text {
+    justify-content: right;
+    font-size: 14px;
+    color: #000000;
+  }
+  

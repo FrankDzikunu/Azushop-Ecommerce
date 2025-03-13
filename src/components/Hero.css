@@ -1,0 +1,49 @@
+  .hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 50px 5%;
+    background: url('../assets/hero-image.png') no-repeat center center/cover;
+    width: 100vw;
+    height: 600px;
+    color: white;
+  }
+  
+  .hero-content {
+    max-width: 500px;
+  }
+  
+  .hero-content h1 {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 4rem;
+    margin-bottom: 10px;
+    text-align: left;
+  }
+  
+  .hero-content p {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    text-align: left;
+    text-wrap: nowrap;
+  }
+
+  .shopnow {
+    margin-left: -380px;
+    background-color: white;
+    color: #000000;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  
+  .shopnow:hover {
+    background-color: #6a11cb;
+  }
+  
+  .hero-image img {
+    max-width: 400px;
+    height: auto;
+  }
+  
