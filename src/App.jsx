@@ -5,6 +5,7 @@ import Cart from "./pages/Cart";
 import Favourite from "./pages/Favourite";
 import Checkout from "./pages/Checkout";
 import "./App.css";
+import ProductDetails from "./pages/ProductDetails";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Route path="/cart" element={<Cart />} />
       <Route path="/favourite" element={<Favourite />} />
       <Route path="/checkout" element={<Checkout />} />
+      <Route path="/productdetails" element={<ProductDetails />} />
     </Routes>
   );
 }

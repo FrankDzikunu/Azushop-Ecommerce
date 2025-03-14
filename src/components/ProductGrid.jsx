@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import "./ProductGrid.css";
 import { FaRegHeart, FaShoppingCart, FaEye} from "react-icons/fa";
 
@@ -109,6 +110,7 @@ const ProductGrid = () => {
         </aside>
 
         {/* Product Grid */}
+        <Link to="/productdetails"> 
         <div className="product-grid">
           {products.map((product) => (
             <div key={product.id} className="product-card">
@@ -124,7 +126,8 @@ const ProductGrid = () => {
               </div>
             </div>
           ))}
-        </div>
+        </div> 
+        </Link>
       </div>
     </div>
     </div>
