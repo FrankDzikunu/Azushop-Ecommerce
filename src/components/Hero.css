@@ -1,13 +1,16 @@
-  .hero {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 50px 5%;
-    background: url('../assets/hero-image.png') no-repeat center center/cover;
-    width: 100vw;
-    height: 600px;
-    color: white;
-  }
+.hero {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 50px 5%;
+  width: 100vw;
+  height: 600px;
+  color: white;
+  background-size: cover;
+  background-position: center;
+  transition: background-image 1s ease-in-out;
+}
+
   
   .hero-content {
     max-width: 500px;
