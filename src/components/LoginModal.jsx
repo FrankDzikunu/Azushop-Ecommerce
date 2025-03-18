@@ -1,15 +1,69 @@
-import React from "react";
-import "./LoginModal.css"; 
+import React, { useState } from "react";
+import "./LoginModal.css";
 
-const LoginModal = ({ onClose }) => {
+const LoginModal = ({ onClose, setUser }) => {
+  const [username, setUsername] = useState(""); // Changed from email to username
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError("");
+  
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/login/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          username_or_email: username,  // This field should be used for either username or email
+          password 
+        }),
+      });
+  
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.detail || "Login failed");
+  
+      localStorage.setItem("user", JSON.stringify({
+        username: data.username,
+        email: data.email,
+        isAdmin: data.isAdmin, // Store isAdmin flag
+      }));
+      setUser({
+        username: data.username,
+        email: data.email,
+        isAdmin: data.isAdmin,
+      });
+      
+      onClose();
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+  
+  
+  
+
   return (
     <div className="modal-overlay">
       <div className="modal">
         <button className="close-button" onClick={onClose}>×</button>
         <h2>Login</h2>
-        <form>
-          <input type="email" placeholder="Email address *" required />
-          <input type="password" placeholder="Password *" required />
+        {error && <p className="error">{error}</p>}
+        <form onSubmit={handleLogin}>
+          <input 
+            type="text" 
+            placeholder="Username or Email *" 
+            required 
+            value={username} 
+            onChange={(e) => setUsername(e.target.value)} 
+          />
+          <input 
+            type="password" 
+            placeholder="Password *" 
+            required 
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)} 
+          />
           <button type="submit">Log in</button>
         </form>
         <p>

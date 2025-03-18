@@ -38,3 +38,60 @@
     color: #007bff;
   }
   
+  /* Dropdown container */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.user-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Space between icon and username */
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.user-icon {
+  font-size: 15px;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 5px;
+  padding: 10px;
+  min-width: 150px;
+  display: flex;
+  flex-direction: column;
+  z-index: 10;
+}
+
+/* Dropdown items */
+.dropdown-menu li {
+  list-style: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.dropdown-menu li a {
+  text-decoration: none;
+  color: black;
+  display: block;
+}
+
+.dropdown-menu li:hover {
+  background: #f4f4f4;
+}
+
+/* Logout button */
+.dropdown-menu li:last-child {
+  color: red;
+  font-weight: bold;
+  text-align: center;
+}
