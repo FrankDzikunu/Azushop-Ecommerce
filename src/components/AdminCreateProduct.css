@@ -16,6 +16,10 @@
   }
   
   .productform .file-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
     text-align: center;
     background: #e1eaf4;
     padding: 15px;
@@ -23,6 +27,12 @@
     border-radius: 5px;
   }
   
+  .file-name {
+    text-align: center;
+    font-size: 14px;
+    color: #555;
+  }
+
   .productform .file-label {
     background: #009CDE;
     color: white;

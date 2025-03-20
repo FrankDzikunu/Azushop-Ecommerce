@@ -1,76 +1,112 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import "./AdminCategory.css";
 
+const BASE_URL = "http://127.0.0.1:8000"; // Backend base URL
+
 const AdminCategory = () => {
-  const [categories, setCategories] = useState([
-    "Laptop",
-    "Phone",
-    "Camera",
-    "Watch",
-    "Tablet",
-  ]);
+  const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [error, setError] = useState(null);
+
+  // Fetch categories from backend on mount
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      const token = storedUser?.access;
+      const response = await axios.get(`${BASE_URL}/api/categories/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      // Assuming the backend now returns an array of objects [{id, name}, ...]
+      setCategories(response.data);
+    } catch (err) {
+      console.error("Error fetching categories:", err);
+      setError("Failed to load categories.");
+    }
+  };
 
   const handleChange = (e) => {
     setCategory(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (isEditing) {
-      // Update existing category
-      setCategories(
-        categories.map((item) => (item === selectedCategory ? category : item))
-      );
-      setIsEditing(false);
-      setSelectedCategory(null);
-    } else {
-      // Add new category
-      if (category && !categories.includes(category)) {
-        setCategories([...categories, category]);
-      }
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    const token = storedUser?.access;
+    if (!token) {
+      setError("Authentication required. Please log in.");
+      return;
     }
 
-    setCategory("");
+    try {
+      if (isEditing) {
+        // Update category (using PUT)
+        await axios.put(
+          `${BASE_URL}/api/categories/${selectedCategory.id}/`,
+          { name: category },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } else {
+        // Add new category (using POST)
+        await axios.post(
+          `${BASE_URL}/api/categories/`,
+          { name: category },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
+      // Refresh categories from backend
+      fetchCategories();
+      setCategory("");
+      setIsEditing(false);
+      setSelectedCategory(null);
+    } catch (err) {
+      console.error("Error submitting category:", err);
+      setError("Failed to submit category.");
+    }
   };
 
-  const handleEdit = (categoryName) => {
-    setCategory(categoryName);
+  const handleEdit = (categoryObj) => {
+    setCategory(categoryObj.name);
     setIsEditing(true);
-    setSelectedCategory(categoryName);
+    setSelectedCategory(categoryObj);
   };
 
   return (
     <div className="admin-category">
       <Link to="/" className="backbutton">← Back</Link>
       <div className="product-container1" style={{ marginBottom: "290px" }}>
-      <h3 className="admin-tabs"> Update Category</h3>
+        <h3 className="admin-tabs"> Update Category</h3>
 
-      <form onSubmit={handleSubmit} className="category-form">
-        <input
-          type="text"
-          placeholder="Write category name"
-          value={category}
-          onChange={handleChange}
-          required
-        />
-        <button type="submit" className="submit-button">
-          {isEditing ? "Update" : "Submit"}
-        </button>
-      </form>
+        {error && <p className="error-message">{error}</p>}
 
-      <div className="category-list">
-        {categories.map((item, index) => (
-          <button key={index} className="category-item" onClick={() => handleEdit(item)}>
-            {item}
+        <form onSubmit={handleSubmit} className="category-form">
+          <input
+            type="text"
+            placeholder="Write category name"
+            value={category || ""}
+            onChange={handleChange}
+            required
+          />
+          <button type="submit" className="submit-button">
+            {isEditing ? "Update" : "Submit"}
           </button>
-        ))}
+        </form>
+
+        <div className="category-list">
+          {categories.map((item) => (
+            <button key={item.id} className="category-item" onClick={() => handleEdit(item)}>
+              {item.name}
+            </button>
+          ))}
+        </div>
       </div>
-    </div>
     </div>
   );
 };

@@ -82,6 +82,7 @@
   .product-image {
     width: 100%;
     max-width: 150px;
+    max-height: 50%;
     height: auto;
     display: block;
     margin: 0 auto 10px;

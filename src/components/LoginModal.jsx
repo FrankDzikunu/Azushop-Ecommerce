@@ -2,46 +2,35 @@ import React, { useState } from "react";
 import "./LoginModal.css";
 
 const LoginModal = ({ onClose, setUser }) => {
-  const [username, setUsername] = useState(""); // Changed from email to username
+  const [username, setUsername] = useState(""); 
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
-  
+
     try {
       const response = await fetch("http://127.0.0.1:8000/api/login/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
-          username_or_email: username,  // This field should be used for either username or email
+          username_or_email: username,  
           password 
         }),
       });
-  
+
       const data = await response.json();
       if (!response.ok) throw new Error(data.detail || "Login failed");
-  
-      localStorage.setItem("user", JSON.stringify({
-        username: data.username,
-        email: data.email,
-        isAdmin: data.isAdmin, // Store isAdmin flag
-      }));
-      setUser({
-        username: data.username,
-        email: data.email,
-        isAdmin: data.isAdmin,
-      });
-      
+
+      // Store entire response including tokens in localStorage
+      localStorage.setItem("user", JSON.stringify(data));
+      setUser(data);
       onClose();
     } catch (err) {
       setError(err.message);
     }
   };
-  
-  
-  
 
   return (
     <div className="modal-overlay">
