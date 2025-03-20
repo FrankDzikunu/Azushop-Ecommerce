@@ -1,0 +1,63 @@
+.profile-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    font-family: Arial, sans-serif;
+    margin-bottom: 180px;
+  }
+  
+  .profile-card {
+    background: #f7fafd;
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  .profile-tabs {
+    display: flex;
+    gap: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+  
+  .active-tab {
+    font-weight: bold;
+    color: #003087;
+    cursor: pointer;
+  }
+  
+  .inactive-tab {
+    color: black;
+    cursor: pointer;
+  }
+  
+  .profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .profile-input {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background: #e1eaf4;
+    border-radius: 5px;
+    font-size: 16px;
+  }
+  
+  .disabled {
+    color: black;
+    opacity: 0.7;
+  }
+  
+  .update-button {
+    background: #003c80;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 15px;
+  }
+  

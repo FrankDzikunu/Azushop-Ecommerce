@@ -1,0 +1,65 @@
+.admin-orders-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    font-family: Arial, sans-serif;
+  }
+  
+  .orders-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #f7fafd;
+  }
+  
+  .orders-table th,
+  .orders-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .orders-table th {
+    background: #e1eaf4;
+    font-weight: bold;
+  }
+  
+  .order-image {
+    width: 50px;
+    height: auto;
+    border-radius: 5px;
+  }
+  
+  .status {
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  .paid.completed {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .delivered.pending {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+  
+  .delivered.delivered {
+    background-color: #4caf50;
+    color: white;
+  }
+  
+  .view-btn {
+    background-color: #003c80;
+    border: none;
+    color: white;
+    padding: 8px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .view-btn:hover {
+    background-color: #00265e;
+  }
+  

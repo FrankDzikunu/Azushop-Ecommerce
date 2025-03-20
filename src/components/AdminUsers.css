@@ -1,0 +1,56 @@
+.admin-users-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    font-family: Arial, sans-serif;
+    margin-bottom: 150px;
+  }
+  
+  .users-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #f7fafd;
+  }
+  
+  .users-table th,
+  .users-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .users-table th {
+    background: #e1eaf4;
+    font-weight: bold;
+  }
+  
+  .check-icon {
+    color: #3bb077;
+    font-size: 18px;
+  }
+  
+  .cross-icon {
+    color: #d9534f;
+    font-size: 18px;
+  }
+  
+  .actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .edit-btn,
+  .delete-btn {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .edit-btn {
+    color: #007bff;
+  }
+  
+  .delete-btn {
+    color: #d9534f;
+  }
+  

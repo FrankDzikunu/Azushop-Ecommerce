@@ -6,6 +6,14 @@ import Favourite from "./pages/Favourite";
 import Checkout from "./pages/Checkout";
 import "./App.css";
 import ProductDetails from "./pages/ProductDetails";
+import AdminProductsPage from "./pages/AdminProductsPage";
+import AdminCreateProductPage from "./pages/AdminCreateProductPage";
+import AdminProductDetailsPage from "./pages/AdminProductDetailsPage";
+import AdminCategoryPage from "./pages/AdminCategoryPage";
+import Profile from "./pages/Profile";
+import AdminUsersPage from "./pages/AdminUsersPage";
+import AdminOrdersPage from "./pages/AdminOrdersPage";
+import AdminOrderDetailsPage from "./pages/AdminOrderDetailsPage";
 
 function App() {
   return (
@@ -16,6 +24,14 @@ function App() {
       <Route path="/favourite" element={<Favourite />} />
       <Route path="/checkout" element={<Checkout />} />
       <Route path="/productdetails" element={<ProductDetails />} />
+      <Route path="/admin/products" element={<AdminProductsPage />} />
+      <Route path="/admin/createproduct" element={<AdminCreateProductPage />} />
+      <Route path="/admin/updateproduct" element={<AdminProductDetailsPage />} />
+      <Route path="/admin/categories" element={<AdminCategoryPage />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/admin/users" element={<AdminUsersPage />} />
+      <Route path="/admin/orders" element={<AdminOrdersPage />} />
+      <Route path="/admin/orders/:id" element={<AdminOrderDetailsPage />} />
     </Routes>
   );
 }
