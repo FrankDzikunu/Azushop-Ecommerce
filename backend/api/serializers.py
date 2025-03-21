@@ -6,7 +6,7 @@ class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)  # Password won't be exposed in responses
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'password']
+        fields = '__all__'
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:

@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes  
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework import status
 from .serializers import UserSerializer
 from rest_framework import generics
@@ -76,3 +76,14 @@ def login_user(request):
         })
     
     return Response({"detail": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['DELETE'])
+@permission_classes([IsAdminUser])
+def delete_user(request, id):
+    try:
+        user = User.objects.get(id=id)
+    except User.DoesNotExist:
+        return Response({"detail": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+    
+    user.delete()
+    return Response({"detail": "User deleted successfully."}, status=status.HTTP_204_NO_CONTENT)

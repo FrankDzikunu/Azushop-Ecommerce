@@ -1,100 +1,108 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaTrash, FaEdit, FaCheck, FaTimes } from "react-icons/fa";
+import Swal from "sweetalert2";
+import axios from "axios";
 import "./AdminUsers.css";
 
-const users = [
-  {
-    id: "6537b4b8fb1be49cc3f658",
-    name: "John Doe",
-    email: "johndoe@gmail.com",
-    isAdmin: true,
-  },
-  {
-    id: "6537b4b8fb1be49cc3f658",
-    name: "User One",
-    email: "userone@gmail.com",
-    isAdmin: false,
-  },
-  {
-    id: "6537b4b8fb1be49cc3f658",
-    name: "User Two",
-    email: "usertwogmail.com",
-    isAdmin: false,
-  },
-  {
-    id: "6537b4b8fb1be49cc3f658",
-    name: "User Three",
-    email: "userthree@gmail.com",
-    isAdmin: false,
-  },
-  {
-    id: "6537b4b8fb1be49cc3f658",
-    name: "User Four",
-    email: "userfour@gmail.com",
-    isAdmin: false,
-  },
-  {
-    id: "6537b4b8fb1be49cc3f658",
-    name: "User Five",
-    email: "userfive@gmail.com",
-    isAdmin: false,
-  },
-];
+const BASE_URL = "http://127.0.0.1:8000";
 
 const AdminUsers = () => {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const storedUser = JSON.parse(localStorage.getItem("user"));
+        const token = storedUser?.access;
+        const response = await axios.get(`${BASE_URL}/api/users/`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setUsers(response.data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+    fetchUsers();
+  }, []);
+
   const handleEdit = (id) => {
-    console.log("Edit user:", id);
+    window.location.href = `/admin/users/edit/${id}`;
   };
 
-  const handleDelete = (id) => {
-    console.log("Delete user:", id);
+  const handleDelete = async (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const storedUser = JSON.parse(localStorage.getItem("user"));
+          const token = storedUser?.access;
+          await axios.delete(`${BASE_URL}/api/users/${id}/`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setUsers(users.filter((user) => user.id !== id));
+          Swal.fire("Deleted!", "User has been deleted.", "success");
+        } catch (error) {
+          Swal.fire("Error!", "Failed to delete user.", "error");
+        }
+      }
+    });
   };
 
   return (
     <div className="admin-users-container">
       <Link to="/" className="backbutton">← Back</Link>
       <div className="product-container1">
-      <div className="admin-tabs">
-            <h2 className="active-tab">Users</h2>
+        <div className="admin-tabs">
+          <h2 className="active-tab">Users</h2>
         </div>
-      
-      <table className="users-table">
-        <thead>
-          <tr>
-            <th>Id</th>
-            <th>Name</th>
-            <th>Email</th>
-            <th>Admin</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.map((user) => (
-            <tr key={user.id}>
-              <td>{user.id}</td>
-              <td>{user.name}</td>
-              <td>{user.email}</td>
-              <td>
-                {user.isAdmin ? (
-                  <FaCheck className="check-icon" />
-                ) : (
-                  <FaTimes className="cross-icon" />
-                )}
-              </td>
-              <td className="actions">
-                <button className="edit-btn" onClick={() => handleEdit(user.id)}>
-                  <FaEdit />
-                </button>
-                <button className="delete-btn" onClick={() => handleDelete(user.id)}>
-                  <FaTrash />
-                </button>
-              </td>
+        <table className="users-table">
+          <thead>
+            <tr>
+              <th>Id</th>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Admin</th>
+              <th>Actions</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {users.map((user) => {
+              // Check if the user is an admin by either "isAdmin" or "is_staff"
+              const isUserAdmin = user.isAdmin || user.is_staff;
+              return (
+                <tr key={user.id}>
+                  <td>{user.id}</td>
+                  <td>{user.username}</td>
+                  <td>{user.email}</td>
+                  <td>
+                    {isUserAdmin ? (
+                      <FaCheck className="check-icon" />
+                    ) : (
+                      <FaTimes className="cross-icon" />
+                    )}
+                  </td>
+                  <td className="actions">
+                    <button className="edit-btn" onClick={() => handleEdit(user.id)}>
+                      <FaEdit />
+                    </button>
+                    <button className="delete-btn" onClick={() => handleDelete(user.id)}>
+                      <FaTrash />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

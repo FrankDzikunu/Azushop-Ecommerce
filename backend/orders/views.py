@@ -71,6 +71,32 @@ def create_order(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_orders(request):
-    orders = Order.objects.filter(user=request.user)
+    if request.user.is_staff:
+        orders = Order.objects.all()
+    else:
+        orders = Order.objects.filter(user=request.user)
     serializer = OrderSerializer(orders, many=True)
     return Response(serializer.data)
+
+@api_view(["GET"])
+def get_order_by_id(request, order_id):
+    try:
+        order = Order.objects.get(id=order_id)
+        serializer = OrderSerializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Order.DoesNotExist:
+        return Response({"detail": "Order not found"}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def mark_order_delivered(request, id):
+    try:
+        order = Order.objects.get(id=id)
+    except Order.DoesNotExist:
+        return Response({"detail": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
+    
+    # Update delivery status to Delivered
+    order.delivery_status = "Delivered"
+    order.save()
+    serializer = OrderSerializer(order)
+    return Response(serializer.data, status=status.HTTP_200_OK)
