@@ -3,6 +3,11 @@
     margin: 20px auto;
     margin-bottom: 150px;
   }
+  .favourite-container .product-card {
+    margin:auto 10px;
+    height: 450px;
+    width: 300px;
+  }
   
   .breadcrumb {
     font-size: 14px;
@@ -59,7 +64,5 @@
     color: black;
   }
   
-  .trash-btn {
-    color: red;
-  }
+
   

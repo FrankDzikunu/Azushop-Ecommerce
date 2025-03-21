@@ -14,6 +14,8 @@ import Profile from "./pages/Profile";
 import AdminUsersPage from "./pages/AdminUsersPage";
 import AdminOrdersPage from "./pages/AdminOrdersPage";
 import AdminOrderDetailsPage from "./pages/AdminOrderDetailsPage";
+import MyOrders from "./pages/MyOrders";
+import MyOrdersDetails from "./pages/MyOrdersDetails";
 
 function App() {
   return (
@@ -23,7 +25,7 @@ function App() {
       <Route path="/cart" element={<Cart />} />
       <Route path="/favourite" element={<Favourite />} />
       <Route path="/checkout" element={<Checkout />} />
-      <Route path="/productdetails" element={<ProductDetails />} />
+      <Route path="/productdetails/:id" element={<ProductDetails />} />
       <Route path="/admin/products" element={<AdminProductsPage />} />
       <Route path="/admin/createproduct" element={<AdminCreateProductPage />} />
       <Route path="/admin/updateproduct/:id" element={<AdminProductDetailsPage />} />
@@ -32,6 +34,8 @@ function App() {
       <Route path="/admin/users" element={<AdminUsersPage />} />
       <Route path="/admin/orders" element={<AdminOrdersPage />} />
       <Route path="/admin/orders/:id" element={<AdminOrderDetailsPage />} />
+      <Route path="/admin/myorders/:id" element={<MyOrders />} />
+      <Route path="/admin/viewmyorder/:id" element={<MyOrdersDetails />} />
     </Routes>
   );
 }

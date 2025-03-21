@@ -25,7 +25,7 @@ class Order(models.Model):
         # Payment
     PAYMENT_METHODS = [
         ('paypal', 'PayPal'),
-        ('stripe', 'Stripe'),
+        ('Card', 'Credit Card'),
         ('cod', 'Cash on Delivery')
     ]
     payment_method = models.CharField(max_length=10, choices=PAYMENT_METHODS, default="PayPal")

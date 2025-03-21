@@ -2,8 +2,8 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from .models import Product, Category
-from .serializers import ProductSerializer, CategorySerializer
+from .models import Product, Category, Favorite, CartItem
+from .serializers import ProductSerializer, CategorySerializer, FavoriteSerializer, CartItemSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
 @api_view(['GET'])
@@ -77,3 +77,83 @@ def category_list(request):
     categories = Category.objects.all()
     serializer = CategorySerializer(categories, many=True)
     return Response(serializer.data)
+
+@api_view(['GET', 'POST', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def favorite_view(request, product_id=None):
+    user = request.user
+
+    if request.method == 'GET':
+        favorites = Favorite.objects.filter(user=user)
+        serializer = FavoriteSerializer(favorites, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        if not product_id:
+            return Response({"error": "Product ID required"}, status=400)
+        product = Product.objects.get(id=product_id)
+        Favorite.objects.get_or_create(user=user, product=product)
+        return Response({"message": "Added to favorites"}, status=201)
+
+    elif request.method == 'DELETE':
+        if not product_id:
+            return Response({"error": "Product ID required"}, status=400)
+        try:
+            favorite = Favorite.objects.get(user=user, product_id=product_id)
+            favorite.delete()
+            return Response({"message": "Removed from favorites"}, status=204)
+        except Favorite.DoesNotExist:
+            return Response({"error": "Not in favorites"}, status=404)
+
+
+@api_view(['GET', 'POST', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
+def cart_view(request, product_id=None):
+    user = request.user
+
+    if request.method == 'GET':
+        # If a product_id is provided, return only that cart item
+        if product_id is not None:
+            try:
+                cart_item = CartItem.objects.get(user=user, product__id=product_id)
+                serializer = CartItemSerializer(cart_item)
+                return Response(serializer.data)
+            except CartItem.DoesNotExist:
+                return Response({"error": "Cart item not found"}, status=404)
+        else:
+            cart_items = CartItem.objects.filter(user=user)
+            serializer = CartItemSerializer(cart_items, many=True)
+            return Response(serializer.data)
+
+    elif request.method == 'POST':
+        if not product_id:
+            return Response({"error": "Product ID required"}, status=400)
+        product = Product.objects.get(id=product_id)
+        cart_item, created = CartItem.objects.get_or_create(user=user, product=product)
+        if not created:
+            cart_item.quantity += 1
+            cart_item.save()
+        return Response({"message": "Added to cart"}, status=201)
+
+    elif request.method == 'PUT':
+        if not product_id:
+            return Response({"error": "Product ID required"}, status=400)
+        try:
+            cart_item = CartItem.objects.get(user=user, product__id=product_id)
+            new_quantity = request.data.get("quantity", 1)
+            cart_item.quantity = new_quantity
+            cart_item.save()
+            return Response({"message": "Cart updated"}, status=200)
+        except CartItem.DoesNotExist:
+            return Response({"error": "Item not in cart"}, status=404)
+
+    elif request.method == 'DELETE':
+        if not product_id:
+            return Response({"error": "Product ID required"}, status=400)
+        deleted_count, _ = CartItem.objects.filter(user=user, product__id=product_id).delete()
+        cart_items = CartItem.objects.filter(user=user)
+        serializer = CartItemSerializer(cart_items, many=True)
+        if deleted_count > 0:
+            return Response({"message": "Removed from cart", "cart": serializer.data}, status=200)
+        else:
+            return Response({"message": "Item not in cart", "cart": serializer.data}, status=200)

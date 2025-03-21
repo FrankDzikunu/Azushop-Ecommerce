@@ -3,7 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Order, OrderItem
-from products.models import Product
+from products.models import Product, CartItem
 from .serializers import OrderSerializer
 from decimal import Decimal
 
@@ -26,19 +26,15 @@ def create_order(request):
     # Create the Order
     order = Order.objects.create(
         user=user,
-        total_price=0,  # Will be updated later
+        total_price=0,  # Placeholder, will be updated later
         payment_status=False,
         delivery_status='Processing',
-        shipping_cost=5.00,  # Example shipping cost
-        tax=0.05,  # Example tax percentage (5%)
-        
-        # Billing Details
+        shipping_cost=5.00,
+        tax=0.05,
         address=data['address'],
         city=data['city'],
         postal_code=data['postal_code'],
         country=data['country'],
-        
-        # Payment Method
         payment_method=data['payment_method']
     )
 
@@ -57,11 +53,13 @@ def create_order(request):
         )
         total_price += order_item.total_price
 
-    # Calculate tax and update total price
     tax_amount = total_price * Decimal(str(order.tax))
     shipping_cost = Decimal(str(order.shipping_cost))
     order.total_price = total_price + tax_amount + shipping_cost
     order.save()
+
+    # Clear the user's cart after creating the order
+    CartItem.objects.filter(user=user).delete()
 
     serializer = OrderSerializer(order)
     return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -100,3 +98,13 @@ def mark_order_delivered(request, id):
     order.save()
     serializer = OrderSerializer(order)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def checkout_details(request):
+    data = {
+        "shippingFee": 5.00,               
+        "tax": 10.00,                      
+        "paymentMethods": ["Paypal", "Credit Card", "Cash on Delivery"]
+    }
+    return Response(data, status=status.HTTP_200_OK)

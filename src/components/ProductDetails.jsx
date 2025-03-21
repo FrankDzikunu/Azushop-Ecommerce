@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./ProductDetails.css";
+import { FaRegHeart, FaShoppingCart, FaEye } from "react-icons/fa";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -21,9 +23,9 @@ const ProductDetails = () => {
   };
 
   const relatedProducts = [
-    { name: "Apple MacBook Pro 2019 | 16\"", price: "$749.99", image: "/images/macbook.png", brand: "Apple" },
-    { name: "Apple MacBook Pro 2020 | 13.3\" Touch Bar", price: "$949.99", image: "/images/Apple MacBook.png", brand: "Apple" },
-    { name: "HP EliteBook 840 G5 | i5-8350U | 14\"", price: "$349.99", image: "/images/HP laptop.png", brand: "HP" },
+    { name: "Apple MacBook Pro 2019 | 16\"", price: "$749.99", image: "/images/macbook.png", brand: "Apple", description: "RAM 16.0 GB | Memory 512 GB Keyboard layout Eng (English)"  },
+    { name: "Apple MacBook Pro 2020 | 13.3\" Touch Bar", price: "$949.99", image: "/images/Apple MacBook.png", brand: "Apple", description: "RAM 16.0 GB | Memory 512 GB Keyboard layout Eng (English)" },
+    { name: "HP EliteBook 840 G5 | i5-8350U | 14\"", price: "$349.99", image: "/images/HP laptop.png", brand: "HP", description: "RAM 16.0 GB | Memory 512 GB Keyboard layout Eng (English)" },
   ];
 
   const reviews = [
@@ -48,7 +50,7 @@ const ProductDetails = () => {
       </nav>
 
       <div className="product-container">
-        <img src={product.image} alt={product.name} className="product-image" />
+        <img src={product.image} alt={product.name} className="product_image" />
         <div className="product-info">
           <p>Brand: <strong>{product.brand}</strong></p>
           <h1>{product.name}</h1>
@@ -85,10 +87,22 @@ const ProductDetails = () => {
         <div className="related-products">
           {relatedProducts.map((p, index) => (
             <div key={index} className="product-card">
-              <img src={p.image} alt={p.name} />
-              <p className="brand">{p.brand}</p>
-              <p className="name">{p.name}</p>
-              <p className="price">{p.price}</p>
+              <div className="product-brand">{p.brand}</div>
+              <img src={p.image} alt={p.name} className="product-image"/>       
+              <h3 className="product-name">{p.name}</h3>
+              <p className="product-specs">{p.description}</p>
+              <span className="product-price">${p.price}</span>
+              <div className="product-actions">
+                    <FaRegHeart
+                      className="icon"
+                    />
+                    <FaShoppingCart
+                      className="icon"
+                    />
+                    <Link to={`/productdetails/${product.id}`}>
+                      <FaEye className="icon" style={{ color: "black" }} />
+                    </Link>
+                  </div>
             </div>
           ))}
         </div>

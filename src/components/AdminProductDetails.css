@@ -13,12 +13,12 @@
     margin-bottom: 15px;
   }
   
-  .product-image {
+  .admin-product-details .product-image {
     max-width: 300px;
     border-radius: 5px;
   }
   
-  .file-upload {
+  .admin-product-details .file-upload {
     display: flex;
     align-items: center;
     justify-content: center;
