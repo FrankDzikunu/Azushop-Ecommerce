@@ -4,29 +4,75 @@ import "./Navbar.css";
 import { FaHome, FaShoppingCart, FaHeart, FaUser, FaCaretDown } from "react-icons/fa";
 import { FiLogIn } from "react-icons/fi";
 import { BiShoppingBag } from "react-icons/bi";
+import axios from "axios";
 import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
 import { useNavigate } from "react-router-dom";
+
+const BASE_URL = "http://127.0.0.1:8000";
 
 const Navbar = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [cartCount, setCartCount] = useState(0);
+  const [favoriteCount, setFavoriteCount] = useState(0);
   const navigate = useNavigate();
 
-  // Check if user is already logged in
+  // Function to fetch cart count
+  const fetchCartCount = async (token) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/cart/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setCartCount(response.data.length);
+    } catch (error) {
+      console.error("Error fetching cart count:", error);
+    }
+  };
+
+  // Function to fetch favorite count
+  const fetchFavoriteCount = async (token) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/favorites/`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setFavoriteCount(response.data.length);
+    } catch (error) {
+      console.error("Error fetching favorite count:", error);
+    }
+  };
+
+  // Load user on mount and fetch counts if logged in
   useEffect(() => {
     const loggedUser = JSON.parse(localStorage.getItem("user"));
     if (loggedUser) {
       setUser(loggedUser);
+      fetchCartCount(loggedUser.access);
+      fetchFavoriteCount(loggedUser.access);
     }
   }, []);
 
-  // Handle Logout
+  // Listen for the custom "updateCounts" event to re-fetch counts instantly
+  useEffect(() => {
+    const handleUpdateCounts = () => {
+      if (user) {
+        fetchCartCount(user.access);
+        fetchFavoriteCount(user.access);
+      }
+    };
+    window.addEventListener("updateCounts", handleUpdateCounts);
+    return () => {
+      window.removeEventListener("updateCounts", handleUpdateCounts);
+    };
+  }, [user]);
+
   const handleLogout = () => {
     localStorage.removeItem("user");
     setUser(null);
+    setCartCount(0);
+    setFavoriteCount(0);
     navigate("/");
   };
 
@@ -41,18 +87,26 @@ const Navbar = () => {
           <li>
             <Link to="/shop"><BiShoppingBag /> Shop</Link>
           </li>
-          <li>
-            <Link to="/cart"><FaShoppingCart /> Cart</Link>
+          <li className="cart-icon">
+            <Link to="/cart">
+              <FaShoppingCart />
+              {cartCount > 0 && <span className="item-count">{cartCount}</span>}
+              Cart
+            </Link>
           </li>
-          <li>
-            <Link to="/favourite"><FaHeart /> Favourite</Link>
+          <li className="favorite-icon">
+            <Link to="/favourite">
+              <FaHeart />
+              {favoriteCount > 0 && <span className="item-count">{favoriteCount}</span>}
+              Favourite
+            </Link>
           </li>
         </ul>
 
         <ul className="nav-links">
           {user ? (
             <li className="dropdown">
-              <span onClick={() => setDropdownOpen(!dropdownOpen)} className="user-dropdown" >
+              <span onClick={() => setDropdownOpen(!dropdownOpen)} className="user-dropdown">
                 <FaUser className="user-icon" /> {user.username} <FaCaretDown />
               </span>
               {dropdownOpen && (
@@ -66,9 +120,7 @@ const Navbar = () => {
                       <li><Link to="/admin/users">Users</Link></li>
                     </>
                   ) : (
-                    <>
-                      <li><Link to="/orders">My Orders</Link></li>
-                    </>
+                    <li><Link to="/myorders/:id">My Orders</Link></li>
                   )}
                   <li><Link to="/profile">Profile</Link></li>
                   <li onClick={handleLogout} style={{ cursor: "pointer", color: "red", textAlign: "left" }}>

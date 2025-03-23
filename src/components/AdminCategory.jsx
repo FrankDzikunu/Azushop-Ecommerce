@@ -21,7 +21,7 @@ const AdminCategory = () => {
     try {
       const storedUser = JSON.parse(localStorage.getItem("user"));
       const token = storedUser?.access;
-      const response = await axios.get(`${BASE_URL}/api/categories/`, {
+      const response = await axios.get(`${BASE_URL}/api/category/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       // Assuming the backend now returns an array of objects [{id, name}, ...]
@@ -49,14 +49,14 @@ const AdminCategory = () => {
       if (isEditing) {
         // Update category (using PUT)
         await axios.put(
-          `${BASE_URL}/api/categories/${selectedCategory.id}/`,
+          `${BASE_URL}/api/category/${selectedCategory.id}/`,
           { name: category },
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
         // Add new category (using POST)
         await axios.post(
-          `${BASE_URL}/api/categories/`,
+          `${BASE_URL}/api/category/`,
           { name: category },
           { headers: { Authorization: `Bearer ${token}` } }
         );

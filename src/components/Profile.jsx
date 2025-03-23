@@ -26,7 +26,7 @@ const Profile = () => {
       <div className="profile-card">
         <div className="profile-tabs">
           <span className="active-tab">Update Profile</span>
-          <Link to="/admin/myorders/:id"><span className="inactive-tab">My orders</span></Link>
+          <Link to="/myorders/:id"><span className="inactive-tab">My orders</span></Link>
         </div>
 
         <form onSubmit={handleSubmit} className="profile-form">

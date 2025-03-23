@@ -14,3 +14,8 @@ If you are developing a production application, we recommend using TypeScript an
 python -m venv venv
 source venv/bin/activate   # On macOS/Linux
 venv\Scripts\activate      # On Windows
+
+python manage.py createsuperuser
+
+python manage.py makemigrations
+python manage.py migrate

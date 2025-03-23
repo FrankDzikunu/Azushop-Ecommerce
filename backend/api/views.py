@@ -8,22 +8,12 @@ from rest_framework.permissions import AllowAny, IsAdminUser
 from rest_framework import status
 from .serializers import UserSerializer
 from rest_framework import generics
-from products.models import Product
-from .serializers import ProductSerializer
 
 @api_view(['GET'])
 def get_users(request):
     users = User.objects.all()
     serializer = UserSerializer(users, many=True)
     return Response(serializer.data)
-
-class ProductListCreateView(generics.ListCreateAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-
-class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
 
 @api_view(['POST'])
 @permission_classes([AllowAny])

@@ -3,13 +3,14 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import "./ProductGrid.css";
 import { FaHeart, FaShoppingCart, FaEye } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const BASE_URL = "http://127.0.0.1:8000";
 
 const ProductGrid = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  // For brands, we'll derive from products if no separate endpoint is provided
   const [brands, setBrands] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
@@ -17,25 +18,24 @@ const ProductGrid = () => {
   const [favorites, setFavorites] = useState(new Set());
   const [cart, setCart] = useState(new Set());
 
-  // Retrieve token from localStorage (if using JWT, include headers accordingly)
+  // Retrieve token from localStorage (if any)
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const token = storedUser?.access;
 
   useEffect(() => {
     fetchProducts();
     fetchCategories();
-    fetchFavorites();
-    fetchCart();
-  }, []);
+    if (token) {
+      fetchFavorites();
+      fetchCart();
+    }
+  }, [token]);
 
   // Fetch products from backend
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/products/`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const response = await axios.get(`${BASE_URL}/api/products/`);
       setProducts(response.data);
-      // Derive unique brands from products if not provided by backend
       const brandSet = new Set(response.data.map((p) => p.brand));
       setBrands([...brandSet]);
     } catch (error) {
@@ -46,9 +46,7 @@ const ProductGrid = () => {
   // Fetch categories from backend
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/categories/`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const response = await axios.get(`${BASE_URL}/api/categories/`);
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -59,7 +57,7 @@ const ProductGrid = () => {
   const fetchFavorites = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/favorites/`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
       setFavorites(new Set(response.data.map((fav) => fav.product)));
@@ -72,7 +70,7 @@ const ProductGrid = () => {
   const fetchCart = async () => {
     try {
       const response = await axios.get(`${BASE_URL}/api/cart/`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
       setCart(new Set(response.data.map((item) => item.product)));
@@ -83,24 +81,33 @@ const ProductGrid = () => {
 
   // Toggle favorite (add/remove)
   const toggleFavorite = async (productId) => {
+    if (!token) {
+      toast.warning("You must log in to add products to favorites!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
     try {
+      let updatedFavorites;
       if (favorites.has(productId)) {
         await axios.delete(`${BASE_URL}/api/favorites/${productId}/`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         });
-        setFavorites((prev) => {
-          const updated = new Set(prev);
-          updated.delete(productId);
-          return updated;
-        });
+        updatedFavorites = new Set(favorites);
+        updatedFavorites.delete(productId);
       } else {
         await axios.post(`${BASE_URL}/api/favorites/${productId}/`, {}, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         });
-        setFavorites((prev) => new Set(prev).add(productId));
+        updatedFavorites = new Set(favorites);
+        updatedFavorites.add(productId);
       }
+      setFavorites(updatedFavorites);
+      // Dispatch custom event so Navbar updates counts immediately
+      window.dispatchEvent(new Event("updateCounts"));
     } catch (error) {
       console.error("Error updating favorites:", error);
     }
@@ -108,13 +115,24 @@ const ProductGrid = () => {
 
   // Add product to cart
   const addToCart = async (productId) => {
+    if (!token) {
+      toast.warning("You must log in to add products to cart!", {
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return;
+    }
     try {
       if (!cart.has(productId)) {
         await axios.post(`${BASE_URL}/api/cart/${productId}/`, {}, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
+          headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         });
-        setCart((prev) => new Set(prev).add(productId));
+        const updatedCart = new Set(cart);
+        updatedCart.add(productId);
+        setCart(updatedCart);
+        // Dispatch event to update Navbar counts
+        window.dispatchEvent(new Event("updateCounts"));
       }
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -125,8 +143,7 @@ const ProductGrid = () => {
   const filteredProducts = products.filter((product) => {
     const matchesCategory =
       selectedCategory === "" ||
-      // Compare product.category (which is a number) to selectedCategory (convert to number)
-      parseInt(product.category) === parseInt(selectedCategory);
+      String(product.category) === String(selectedCategory);
     const matchesBrand =
       selectedBrand === "" || product.brand === selectedBrand;
     const matchesPrice =
@@ -136,6 +153,7 @@ const ProductGrid = () => {
 
   return (
     <div>
+      <ToastContainer />
       <nav className="breadcrumb">
         Home / <span className="active">Shop</span>
       </nav>

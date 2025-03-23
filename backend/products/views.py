@@ -4,25 +4,31 @@ from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from .models import Product, Category, Favorite, CartItem
 from .serializers import ProductSerializer, CategorySerializer, FavoriteSerializer, CartItemSerializer
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
+from django.views.decorators.csrf import csrf_exempt
 
+
+# Public endpoint to get categories
 @api_view(['GET'])
-def get_products(request):
-    products = Product.objects.all()
-    serializer = ProductSerializer(products, many=True)
+@permission_classes([AllowAny])
+def get_categories(request):
+    categories = Category.objects.all()
+    serializer = CategorySerializer(categories, many=True)
     return Response(serializer.data)
 
+# Public endpoint to get active products
 class ProductListCreateView(generics.ListCreateAPIView):
-    queryset = Product.objects.all()
+    queryset = Product.objects.filter(is_active=True)
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [AllowAny]
 
+# Endpoint for product detail (read-only for public)
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly] # Allow read-only for unauthenticated users
+    permission_classes = [IsAuthenticatedOrReadOnly] 
 
-
+@csrf_exempt
 @api_view(['GET', 'POST', 'PUT'])
 @permission_classes([IsAuthenticated])
 def categories_view(request, pk=None):
@@ -48,6 +54,8 @@ def categories_view(request, pk=None):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @permission_classes([IsAuthenticated])
@@ -73,10 +81,12 @@ def product_detail(request, id):
         return Response({"message": "Product deleted successfully"}, status=204)
     
 @api_view(['GET'])
+@permission_classes([AllowAny])
 def category_list(request):
     categories = Category.objects.all()
     serializer = CategorySerializer(categories, many=True)
     return Response(serializer.data)
+
 
 @api_view(['GET', 'POST', 'DELETE'])
 @permission_classes([IsAuthenticated])
@@ -157,3 +167,14 @@ def cart_view(request, product_id=None):
             return Response({"message": "Removed from cart", "cart": serializer.data}, status=200)
         else:
             return Response({"message": "Item not in cart", "cart": serializer.data}, status=200)
+
+class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def perform_destroy(self, instance):
+        # Instead of deleting, mark as inactive
+        instance.is_active = False
+        instance.save()
+        return Response({"message": "Product removed from shop"}, status=status.HTTP_200_OK)

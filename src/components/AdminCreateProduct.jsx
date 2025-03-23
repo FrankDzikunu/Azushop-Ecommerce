@@ -74,6 +74,7 @@ const AdminCreateProduct = () => {
     formData.append("count_in_stock", product.count_in_stock);
     formData.append("category", product.category);
     formData.append("description", product.description);
+    formData.append("is_active", "true");
     if (product.image) {
       formData.append("image", product.image);
     }
@@ -121,7 +122,7 @@ const AdminCreateProduct = () => {
 
           <div className="file-upload">
             <input type="file" id="file" onChange={handleFileChange} hidden />
-            <label htmlFor="file" className="file-label">Choose file</label>
+            <label htmlFor="file" className="file-label" >Choose file</label>
             {product.image && <span className="file-name">{product.image.name}</span>}
           </div>
 
