@@ -24,7 +24,7 @@
   }
   
   /* Close Button */
-  .close-button {
+   .close-button {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -34,18 +34,19 @@
     cursor: pointer;
   }
   
-  /* Form Inputs */
-  form input {
+
+  .modal form input {
     width: 100%;
     padding: 10px;
     margin: 10px 0;
     border: 1px solid #ddd;
     border-radius: 4px;
     background-color: #eef4f7;
+    box-sizing: border-box;
   }
   
   /* Login Button */
-  form button {
+  .modal form button {
     width: 100%;
     padding: 10px;
     background-color: #0056a4;
@@ -57,16 +58,16 @@
   }
   
   /* Signup Link */
-  p {
+ .modal p {
     margin-top: 10px;
   }
   
-  p a {
+ .modal p a {
     color: black;
     text-decoration: none;
   }
   
-  p a:hover {
+ .modal p a:hover {
     text-decoration: underline;
   }
   

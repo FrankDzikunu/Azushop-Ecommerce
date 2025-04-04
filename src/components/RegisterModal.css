@@ -13,7 +13,7 @@
   }
   
   /* Modal Box */
-  .modal {
+  .r-modal {
     background: white;
     padding: 20px;
     border-radius: 8px;
@@ -35,17 +35,18 @@
   }
   
   /* Form Inputs */
-  form input {
+  .r-modal form input {
     width: 100%;
     padding: 10px;
     margin: 10px 0;
     border: 1px solid #ddd;
     border-radius: 4px;
     background-color: #eef4f7;
+    box-sizing: border-box;
   }
   
   /* Register Button */
-  .submit {
+  .r-modal .submit {
     width: 100%;
     padding: 10px;
     background-color: #0056a4;
@@ -57,17 +58,17 @@
   }
   
   /* Login Link */
-  p {
+  .r-modal p {
     margin-top: 10px;
   }
   
-  .login-link {
+  .r-modal .login-link {
     color: black;
     cursor: pointer;
     text-decoration: none;
   }
   
-  .login-link:hover {
+  .r-modal .login-link:hover {
     text-decoration: underline;
   }
   

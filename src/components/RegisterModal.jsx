@@ -42,7 +42,7 @@ const RegisterModal = ({ onClose, setUser, openLogin }) => {
 
   return (
     <div className="modal-overlay">
-      <div className="modal">
+      <div className="r-modal">
         <button className="close-button" onClick={onClose}>×</button>
         <h2>Register</h2>
         {error && <p className="error">{error}</p>}
