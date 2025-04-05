@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { FaShoppingCart, FaHeart, FaEye } from "react-icons/fa";
 import "./Favourite.css";
@@ -8,6 +9,7 @@ const BASE_URL = "http://127.0.0.1:8000";
 const Favourite = () => {
   const [favourites, setFavourites] = useState([]);
   const [cart, setCart] = useState(new Set());
+  const [favorites, setFavorites] = useState(new Set());
 
   // Retrieve token from localStorage
   const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -51,6 +53,11 @@ const Favourite = () => {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       setFavourites((prev) => prev.filter((item) => item.product_detail.id !== productId));
+      const updatedFavorites = new Set(favorites);
+      updatedFavorites.add(productId);
+      setFavorites(updatedFavorites);
+      // Dispatch custom event to updates Navbar counts immediately
+      window.dispatchEvent(new Event("updateCounts"));
     } catch (error) {
       console.error("Error removing favourite:", error);
     }
@@ -103,7 +110,9 @@ const Favourite = () => {
                   <FaHeart style={{ color: "red" }} />
                 </button>
                 <button className="icon-btn eye-btn">
-                  <FaEye />
+                  <Link to={`/productdetails/${item.product_detail.id}`}>
+                    <FaEye className="icon" style={{ color: "black" }} />
+                  </Link>
                 </button>
               </div>
             </div>

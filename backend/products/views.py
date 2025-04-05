@@ -2,8 +2,9 @@ from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from .models import Product, Category, Favorite, CartItem
-from .serializers import ProductSerializer, CategorySerializer, FavoriteSerializer, CartItemSerializer
+from .models import Product, Category, Favorite, CartItem, Review
+from orders.models import OrderItem 
+from .serializers import ProductSerializer, CategorySerializer, FavoriteSerializer, CartItemSerializer, ReviewSerializer
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from django.views.decorators.csrf import csrf_exempt
 
@@ -178,3 +179,43 @@ class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
         instance.is_active = False
         instance.save()
         return Response({"message": "Product removed from shop"}, status=status.HTTP_200_OK)
+    
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def product_reviews(request, product_id):
+    reviews = Review.objects.filter(product__id=product_id).order_by("-created_at")
+    serializer = ReviewSerializer(reviews, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def submit_review(request, product_id):
+    user = request.user
+
+    # Check if user purchased the product by traversing the related Order
+    has_purchased = OrderItem.objects.filter(order__user=user, product_id=product_id).exists()
+    if not has_purchased:
+        return Response({"error": "You must purchase the product to review it."}, status=403)
+
+    data = request.data.copy()
+    data["product"] = product_id
+    serializer = ReviewSerializer(data=data, context={"request": request})
+    if serializer.is_valid():
+        serializer.save(user=user)
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)
+
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def related_products(request, product_id):
+    try:
+        product = Product.objects.get(id=product_id)
+    except Product.DoesNotExist:
+        return Response({"error": "Product not found"}, status=404)
+    
+    related = Product.objects.filter(category=product.category, is_active=True).exclude(id=product.id)
+    serializer = ProductSerializer(related, many=True)
+    return Response(serializer.data)

@@ -7,6 +7,9 @@ from .views import (
     cart_view,
     categories_view,
     product_detail,
+    product_reviews, 
+    submit_review, 
+    related_products
 )
 urlpatterns = [
     path('categories/', get_categories, name='category-list'),
@@ -21,4 +24,8 @@ urlpatterns = [
     path('favorites/<int:product_id>/', favorite_view, name='favorite-add-remove'),
     path('cart/', cart_view, name='cart-list'),
     path('cart/<int:product_id>/', cart_view, name='cart-add-remove'),
+
+    path('products/<int:product_id>/reviews/', product_reviews, name='product-reviews'),
+    path('products/<int:product_id>/review/', submit_review, name='submit-review'),
+    path('products/<int:product_id>/related/', related_products, name='related-products'),
 ]

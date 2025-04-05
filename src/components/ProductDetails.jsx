@@ -1,83 +1,256 @@
-import React, { useState } from "react";
-import { useParams } from "react-router-dom";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 import "./ProductDetails.css";
-import { FaRegHeart, FaShoppingCart, FaEye } from "react-icons/fa";
+import { FaHeart, FaShoppingCart, FaEye } from "react-icons/fa";
+import axios from "axios";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+const BASE_URL = "http://127.0.0.1:8000";
 
 const ProductDetails = () => {
   const { id } = useParams();
-
   const [activeTab, setActiveTab] = useState("related");
+  const [product, setProduct] = useState(null);
+  const [relatedProducts, setRelatedProducts] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [reviewForm, setReviewForm] = useState({ rating: "", comment: "" });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [favorites, setFavorites] = useState(new Set());
+  const [cart, setCart] = useState(new Set());
 
-  const product = {
-    name: "Apple MacBook Pro 2019 | 16\"",
-    brand: "Apple",
-    ram: "16 GB",
-    memory: "512 GB",
-    keyboard: "Eng (English)",
-    price: "$749.99",
-    stock: "In stock",
-    rating: 4,
-    reviews: 1,
-    image: "/images/macbook.png",
+  // Check if user is logged in and get token
+  const storedUser = JSON.parse(localStorage.getItem("user"));
+  const token = storedUser?.access;
+
+  useEffect(() => {
+    if (token) {
+      fetchFavorites();
+      fetchCart();
+    }
+  }, [token]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // Fetch product details
+        const productRes = await axios.get(`${BASE_URL}/api/products/${id}/`);
+        setProduct(productRes.data);
+
+        // Fetch related products
+        const relatedRes = await axios.get(`${BASE_URL}/api/products/${id}/related/`);
+        setRelatedProducts(relatedRes.data);
+
+        // Fetch all reviews for the product
+        const reviewsRes = await axios.get(`${BASE_URL}/api/products/${id}/reviews/`);
+        setReviews(reviewsRes.data);
+      } catch (err) {
+        setError("Error fetching product details");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [id]);
+
+  const handleReviewChange = (e) => {
+    setReviewForm({ ...reviewForm, [e.target.name]: e.target.value });
   };
 
-  const relatedProducts = [
-    { name: "Apple MacBook Pro 2019 | 16\"", price: "$749.99", image: "/images/macbook.png", brand: "Apple", description: "RAM 16.0 GB | Memory 512 GB Keyboard layout Eng (English)"  },
-    { name: "Apple MacBook Pro 2020 | 13.3\" Touch Bar", price: "$949.99", image: "/images/Apple MacBook.png", brand: "Apple", description: "RAM 16.0 GB | Memory 512 GB Keyboard layout Eng (English)" },
-    { name: "HP EliteBook 840 G5 | i5-8350U | 14\"", price: "$349.99", image: "/images/HP laptop.png", brand: "HP", description: "RAM 16.0 GB | Memory 512 GB Keyboard layout Eng (English)" },
-  ];
+  const handleReviewSubmit = async () => {
+    if (!token) {
+      toast.warning("You must log in to submit a review", { position: "top-right", autoClose: 3000 });
+      return;
+    }
+    try {
+      const res = await axios.post(
+        `${BASE_URL}/api/products/${id}/review/`,
+        reviewForm,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      toast.success("Review submitted successfully", { position: "top-right", autoClose: 3000 });
+      // Refresh reviews list after submission
+      const reviewsRes = await axios.get(`${BASE_URL}/api/products/${id}/reviews/`);
+      setReviews(reviewsRes.data);
+      setReviewForm({ rating: "", comment: "" });
+    } catch (err) {
+      toast.error("Failed to submit review, You must purchase the product to review it ", { position: "top-right", autoClose: 3000 });
+      console.error(err);
+    }
+  };
 
-  const reviews = [
-    {
-      name: "John Doe",
-      rating: 4,
-      comment: "Experience exceptional clarity and precision",
-      date: "August 6, 2024",
-    },
-    {
-      name: "John Doe",
-      rating: 3,
-      comment: "Experience exceptional clarity and precision",
-      date: "August 6, 2024",
-    },
-  ];
+  const handleAddToCart = async () => {
+    if (!token) {
+      toast.warning("Please log in to add to cart", { position: "top-right", autoClose: 3000 });
+      return;
+    }
+    try {
+      await axios.post(
+        `${BASE_URL}/api/cart/${id}/`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      toast.success("Product added to cart", { position: "top-right", autoClose: 3000 });
+      const updatedCart = new Set(cart);
+      updatedCart.add(id);
+      setCart(updatedCart);
+      // Dispatch event to update Navbar counts
+      window.dispatchEvent(new Event("updateCounts"));
+    } catch (err) {
+      toast.error("Failed to add product to cart", { position: "top-right", autoClose: 3000 });
+      console.error(err);
+    }
+  };
+
+    // Fetch favorites from backend
+    const fetchFavorites = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/favorites/`, {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        });
+        setFavorites(new Set(response.data.map((fav) => fav.product)));
+      } catch (error) {
+        console.error("Error fetching favorites:", error);
+      }
+    };
+  
+    // Fetch cart from backend
+    const fetchCart = async () => {
+      try {
+        const response = await axios.get(`${BASE_URL}/api/cart/`, {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        });
+        setCart(new Set(response.data.map((item) => item.product)));
+      } catch (error) {
+        console.error("Error fetching cart:", error);
+      }
+    };
+
+    // Toggle favorite (add/remove)
+    const toggleFavorite = async (productId) => {
+      if (!token) {
+        toast.warning("You must log in to add products to favorites!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+      try {
+        let updatedFavorites;
+        if (favorites.has(productId)) {
+          await axios.delete(`${BASE_URL}/api/favorites/${productId}/`, {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          });
+          updatedFavorites = new Set(favorites);
+          updatedFavorites.delete(productId);
+        } else {
+          await axios.post(`${BASE_URL}/api/favorites/${productId}/`, {}, {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          });
+          updatedFavorites = new Set(favorites);
+          updatedFavorites.add(productId);
+        }
+        setFavorites(updatedFavorites);
+        // Dispatch custom event so Navbar updates counts immediately
+        window.dispatchEvent(new Event("updateCounts"));
+      } catch (error) {
+        console.error("Error updating favorites:", error);
+      }
+    };
+  
+    // Add product to cart
+    const addToCart = async (productId) => {
+      if (!token) {
+        toast.warning("You must log in to add products to cart!", {
+          position: "top-right",
+          autoClose: 3000,
+        });
+        return;
+      }
+      try {
+        if (!cart.has(productId)) {
+          await axios.post(`${BASE_URL}/api/cart/${productId}/`, {}, {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          });
+          const updatedCart = new Set(cart);
+          updatedCart.add(productId);
+          setCart(updatedCart);
+          // Dispatch event to update Navbar counts
+          window.dispatchEvent(new Event("updateCounts"));
+        }
+      } catch (error) {
+        console.error("Error adding to cart:", error);
+      }
+    };
+
+  if (loading) return <div>Loading product details...</div>;
+  if (error) return <div>{error}</div>;
+  if (!product) return <div>No product found</div>;
 
   return (
     <div className="product-details">
+      <ToastContainer />
       <nav className="breadcrumb">
-        <a href="/">Home</a> / <a href="/laptop">laptop</a> / {product.name}
+        <Link to="/">Home</Link> /{" "}
+        {product.category_name} /{" "}
+        {product.name}
       </nav>
 
       <div className="product-container">
         <img src={product.image} alt={product.name} className="product_image" />
         <div className="product-info">
-          <p>Brand: <strong>{product.brand}</strong></p>
+          <p >
+            <span className="product_brand">Brand:</span> <strong>{product.brand} <span className="product-rating"> 
+              {"★".repeat(product.rating)}{"☆".repeat(5 - product.rating)}</span> ({product.num_reviews} reviews)
+              </strong>
+          </p>
           <h1>{product.name}</h1>
-          <p><strong>RAM:</strong> {product.ram} | <strong>Memory:</strong> {product.memory}</p>
-          <p><strong>Keyboard:</strong> {product.keyboard}</p>
-          <p className="price">{product.price}</p>
-          <p className="stock">{product.stock}</p>
+          <p className="product-description">
+           {product.description}
+          </p>
+          <p className="price">${product.price}</p>
+          <p className="stock">{product.stock || "In stock"}</p>
           <div className="straigthline"></div>
 
           <select className="quantity">
-            <option>1</option>
-            <option>2</option>
-            <option>3</option>
+            {[...Array(product.count_in_stock || 10).keys()].map((num) => (
+              <option key={num + 1} value={num + 1}>
+                {num + 1}
+              </option>
+            ))}
           </select>
-          <button className="add-to-cart">Add to cart</button>
+          <button className="add-to-cart" onClick={handleAddToCart}>
+            Add to cart
+          </button>
         </div>
       </div>
 
       {/* Tabs Section */}
       <div className="tabs">
-        <button className={activeTab === "related" ? "tab active" : "tab"} onClick={() => setActiveTab("related")}>
+        <button
+          className={activeTab === "related" ? "tab active" : "tab"}
+          onClick={() => setActiveTab("related")}
+        >
           Related Product
         </button>
-        <button className={activeTab === "review" ? "tab active" : "tab"} onClick={() => setActiveTab("review")}>
+        <button
+          className={activeTab === "review" ? "tab active" : "tab"}
+          onClick={() => setActiveTab("review")}
+        >
           Write your Review
         </button>
-        <button className={activeTab === "reviews" ? "tab active" : "tab"} onClick={() => setActiveTab("reviews")}>
+        <button
+          className={activeTab === "reviews" ? "tab active" : "tab"}
+          onClick={() => setActiveTab("reviews")}
+        >
           All Reviews
         </button>
       </div>
@@ -85,21 +258,25 @@ const ProductDetails = () => {
       {/* Tab Content */}
       {activeTab === "related" && (
         <div className="related-products">
-          {relatedProducts.map((p, index) => (
-            <div key={index} className="product-card">
+          {relatedProducts.map((p) => (
+            <div key={p.id} className="product-card">
               <div className="product-brand">{p.brand}</div>
-              <img src={p.image} alt={p.name} className="product-image"/>       
+              <img src={`${'http://127.0.0.1:8000'}${p.image}`} alt={p.name} className="product-image" />
               <h3 className="product-name">{p.name}</h3>
               <p className="product-specs">{p.description}</p>
               <span className="product-price">${p.price}</span>
-              <div className="product-actions">
-                    <FaRegHeart
+                  <div className="product-actions">
+                    <FaHeart
                       className="icon"
+                      onClick={() => toggleFavorite(p.id)}
+                      style={{ color: favorites.has(p.id) ? "red" : "grey" }}
                     />
                     <FaShoppingCart
                       className="icon"
+                      onClick={() => addToCart(p.id)}
+                      style={{ color: cart.has(p.id) ? "green" : "grey" }}
                     />
-                    <Link to={`/productdetails/${product.id}`}>
+                    <Link to={`/productdetails/${p.id}`}>
                       <FaEye className="icon" style={{ color: "black" }} />
                     </Link>
                   </div>
@@ -111,19 +288,32 @@ const ProductDetails = () => {
       {activeTab === "review" && (
         <div className="review-form">
           <label>Ratings</label>
-          <select className="review-select">
-            <option>Select</option>
+          <select
+            className="review-select"
+            name="rating"
+            value={reviewForm.rating}
+            onChange={handleReviewChange}
+          >
+            <option value="">Select</option>
             <option value="5">★★★★★</option>
-              <option value="4">★★★★☆</option>
-              <option value="3">★★★☆☆</option>
-              <option value="2">★★☆☆☆</option>
-              <option value="1">★☆☆☆☆</option>
+            <option value="4">★★★★☆</option>
+            <option value="3">★★★☆☆</option>
+            <option value="2">★★☆☆☆</option>
+            <option value="1">★☆☆☆☆</option>
           </select>
 
           <label>Comments</label>
-          <textarea className="review-textarea" placeholder="Write your review..."></textarea>
+          <textarea
+            className="review-textarea"
+            name="comment"
+            placeholder="Write your review..."
+            value={reviewForm.comment}
+            onChange={handleReviewChange}
+          ></textarea>
 
-          <button className="submit-button">Submit</button>
+          <button className="submit-button" onClick={handleReviewSubmit}>
+            Submit
+          </button>
         </div>
       )}
 
@@ -131,12 +321,18 @@ const ProductDetails = () => {
         <div className="all-reviews">
           {reviews.map((review, index) => (
             <div key={index} className="review-card">
-              <p className="review-name">{review.name}</p>
+              <p className="review-name">{review.user_name}</p>
               <p className="review-rating">
                 {"★".repeat(review.rating)}{"☆".repeat(5 - review.rating)}
               </p>
               <p className="review-comment">{review.comment}</p>
-              <p className="review-date">{review.date}</p>
+              <p className="review-date">
+              {new Date(review.created_at).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
             </div>
           ))}
         </div>

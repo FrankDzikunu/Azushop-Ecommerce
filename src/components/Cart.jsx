@@ -8,6 +8,7 @@ const BASE_URL = "http://127.0.0.1:8000";
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cart, setCart] = useState(new Set());
 
   // Retrieve token from localStorage (assuming JWT)
   const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -58,6 +59,11 @@ const Cart = () => {
       });
       // Update cart items with the returned updated cart data
       setCartItems(response.data.cart);
+      const updatedCart = new Set(cart);
+      updatedCart.add(productId);
+      setCart(updatedCart);
+      // Dispatch event to update Navbar counts
+      window.dispatchEvent(new Event("updateCounts"));
     } catch (error) {
       console.error("Error removing product:", error);
     }

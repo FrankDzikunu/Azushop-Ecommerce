@@ -1,13 +1,13 @@
 .product-details {
   max-width: 1200px;
-  padding: 20px;
+  padding: 50px;
   margin: auto;
   font-family: Arial, sans-serif;
 }
 
 .breadcrumb {
   font-size: 14px;
-  margin-bottom: 15px;
+  margin-bottom: 100px;
 }
 
 .product-container {
@@ -16,23 +16,56 @@
   margin-bottom: 30px;
 }
 
+.product_brand {
+  color: gray;
+}
+
+.product-rating {
+  position: relative; 
+  top: 3px;
+  color: #003d82;
+  font-size: 25px;
+  margin-left: 100px;
+  margin-right: 5px;
+}
 .product-container .product_image {
+  padding: 100px;
   width: 50%;
   height: 50%;
+  background: #F9FBFC;
 }
 
 .product-container .product-info {
   width: 50%;
   justify-items: left;
 }
+
+.product-container .product-info h1{
+  font-size: 25px;
+  text-align: left;
+  margin-bottom: 25px;
+}
+
+.product-description {
+  width: 50%;
+  text-align: left;
+  font-size: 14px;
+  color: #000000b7;
+  margin-bottom: 20px;
+}
+
+
 .product-container .straigthline {
-  border-bottom: 1px solid #000000;
-  margin-bottom: 1rem;
+  display: flex;
+  border-bottom: 1px solid #00000025;
+  width: 100%;
+  margin-bottom: 2.5rem;
+  margin-top: 2rem;
 }
 
 .product-container .price {
   font-size: 22px;
-  color: #007bff;
+  color: #01589A;
   font-weight: bold;
 }
 
@@ -55,6 +88,7 @@
   padding: 10px;
   cursor: pointer;
   width: 500px;
+  margin: 10px 0;
 }
 
 .tabs {
@@ -175,13 +209,14 @@
 }
 
 .review-rating {
-  color: #1000f4;
+  color: #01589A;
   font-size: 14px;
+  margin: 5px 0;
 }
 
 .review-comment {
   font-size: 14px;
-  margin: 5px 0;
+  margin: -2px 0;
 }
 
 .review-date {
