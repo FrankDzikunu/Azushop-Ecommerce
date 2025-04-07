@@ -269,7 +269,11 @@ const ProductGrid = () => {
                 </div>
               ))
             ) : (
+              <div className="cart-loading">
+              <img src="/load-35_256.gif" alt="Loading..." className="loading-gif" />
               <p>No products found.</p>
+            </div>
+              
             )}
           </div>
         </div>
