@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./LoginModal.css";
+import API from "../api";
 
 const LoginModal = ({ onClose, setUser }) => {
   const [username, setUsername] = useState(""); 
@@ -11,24 +12,18 @@ const LoginModal = ({ onClose, setUser }) => {
     setError("");
 
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/login/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          username_or_email: username,  
-          password 
-        }),
+      const response = await API.post("/api/login/", {
+        username_or_email: username,
+        password,
       });
 
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || "Login failed");
-
-      // Store entire response including tokens in localStorage
+      const data = response.data;
       localStorage.setItem("user", JSON.stringify(data));
       setUser(data);
       onClose();
     } catch (err) {
-      setError(err.message);
+      const message = err.response?.data?.detail || "Login failed";
+      setError(message);
     }
   };
 
