@@ -2,10 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FaTrash, FaEdit, FaCheck, FaTimes } from "react-icons/fa";
 import Swal from "sweetalert2";
-import axios from "axios";
+import API from "../api";
 import "./AdminUsers.css";
 
-const BASE_URL = "http://127.0.0.1:8000";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
@@ -15,7 +14,7 @@ const AdminUsers = () => {
       try {
         const storedUser = JSON.parse(localStorage.getItem("user"));
         const token = storedUser?.access;
-        const response = await axios.get(`${BASE_URL}/api/users/`, {
+        const response = await API.get(`/api/users/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUsers(response.data);
@@ -44,7 +43,7 @@ const AdminUsers = () => {
         try {
           const storedUser = JSON.parse(localStorage.getItem("user"));
           const token = storedUser?.access;
-          await axios.delete(`${BASE_URL}/api/users/${id}/`, {
+          await API.delete(`/api/users/${id}/`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           setUsers(users.filter((user) => user.id !== id));

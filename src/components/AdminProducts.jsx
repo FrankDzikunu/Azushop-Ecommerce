@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./AdminProducts.css";
 import { FaPen } from "react-icons/fa";
-import axios from "axios";
+import API, { BASE_URL } from "../api";
 
-const BASE_URL = "http://127.0.0.1:8000"; 
 
 const getImageUrl = (image) => {
   if (!image) return "/images/default.png"; // Default image if no image is provided
@@ -17,10 +16,9 @@ const AdminProducts = () => {
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     const token = storedUser?.access;
-    console.log("Token from localStorage:", token);
 
-    axios
-      .get(`${BASE_URL}/api/products/`, {
+    API
+      .get(`/api/products/`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       })
       .then((res) => {
@@ -61,6 +59,7 @@ const AdminProducts = () => {
               <p className="product-description">{product.description}</p>
               <p className="productprice">${product.price}</p>
               <div className="product-footer">
+              <div className="straigthline"></div>
                 <Link to={`/admin/updateproduct/${product.id}`}>
                   <FaPen className="edit-icon" />
                 </Link>

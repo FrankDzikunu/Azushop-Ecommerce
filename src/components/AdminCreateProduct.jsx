@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import "./AdminCreateProduct.css";
-import axios from "axios";
+import API from "../api";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const BASE_URL = "http://127.0.0.1:8000"; // Backend base URL
 
 const AdminCreateProduct = () => {
   const [product, setProduct] = useState({
@@ -17,9 +18,9 @@ const AdminCreateProduct = () => {
     image: null,
   });
 
-  const [categories, setCategories] = useState([]); // State for categories
+  const [categories, setCategories] = useState([]); 
   const [loading, setLoading] = useState(false);
-  const [fetchError, setFetchError] = useState(null); // Error for categories
+  const [fetchError, setFetchError] = useState(null); 
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
 
@@ -28,7 +29,7 @@ const AdminCreateProduct = () => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
     const token = storedUser?.access;
   
-    axios.get(`${BASE_URL}/api/categories/`, {
+    API.get(`/api/categories/`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -56,16 +57,22 @@ const AdminCreateProduct = () => {
     setLoading(true);
     setError(null);
     setSuccess(false);
-
+  
     const storedUser = JSON.parse(localStorage.getItem("user"));
     const token = storedUser?.access;
-
+  
     if (!token) {
-      setError("Authentication required. Please log in.");
+      toast.error("Authentication required. Please log in.");
       setLoading(false);
       return;
     }
-
+  
+    if (!product.image) {
+      toast.error("Image is required!");
+      setLoading(false);
+      return;
+    }
+  
     const formData = new FormData();
     formData.append("name", product.name);
     formData.append("price", product.price);
@@ -75,20 +82,20 @@ const AdminCreateProduct = () => {
     formData.append("category", product.category);
     formData.append("description", product.description);
     formData.append("is_active", "true");
-    if (product.image) {
-      formData.append("image", product.image);
-    }
-
+    formData.append("image", product.image); // already validated above
+  
     try {
-      const response = await axios.post(`${BASE_URL}/api/products/`, formData, {
+      const response = await API.post(`/api/products/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
       });
-
+  
       console.log("Product Created:", response.data);
       setSuccess(true);
+      toast.success("Product created successfully!");
+  
       setProduct({
         name: "",
         price: "",
@@ -100,11 +107,12 @@ const AdminCreateProduct = () => {
         image: null,
       });
     } catch (err) {
-      setError(err.response?.data?.message || "Something went wrong.");
+      toast.error(err.response?.data?.message || "Something went wrong.");
     }
-
+  
     setLoading(false);
   };
+  
 
   return (
     <div className="admin-create-product">
@@ -116,6 +124,7 @@ const AdminCreateProduct = () => {
         </div>
 
         <form onSubmit={handleSubmit} className="productform">
+          <ToastContainer position="top-right" autoClose={3000} />
           {error && <p className="error-message">{error}</p>}
           {success && <p className="success-message">Product created successfully!</p>}
           {fetchError && <p className="error-message">{fetchError}</p>}

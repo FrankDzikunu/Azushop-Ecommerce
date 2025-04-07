@@ -27,7 +27,13 @@ class ProductListCreateView(generics.ListCreateAPIView):
 class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly] 
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
+    def perform_destroy(self, instance):
+        # Instead of deleting, mark as inactive
+        instance.is_active = False
+        instance.save()
+        return Response({"message": "Product removed from shop"}, status=status.HTTP_200_OK)
 
 @csrf_exempt
 @api_view(['GET', 'POST', 'PUT'])
@@ -169,16 +175,7 @@ def cart_view(request, product_id=None):
         else:
             return Response({"message": "Item not in cart", "cart": serializer.data}, status=200)
 
-class ProductDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def perform_destroy(self, instance):
-        # Instead of deleting, mark as inactive
-        instance.is_active = False
-        instance.save()
-        return Response({"message": "Product removed from shop"}, status=status.HTTP_200_OK)
     
 @api_view(['GET'])
 @permission_classes([AllowAny])

@@ -9,6 +9,7 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+        read_only_fields = ['is_active']
 
     def get_rating(self, obj):
         average = Review.objects.filter(product=obj).aggregate(avg_rating=Avg('rating'))['avg_rating']

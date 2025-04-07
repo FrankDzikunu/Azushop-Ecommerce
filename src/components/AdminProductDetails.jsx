@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "../api";
 import "./AdminProductDetails.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -31,13 +31,13 @@ const AdminProductDetails = () => {
 
   // Retrieve token from localStorage stored under "user"
   const storedUser = JSON.parse(localStorage.getItem("user"));
-  const token = storedUser?.access; // Ensure this returns the token
+  const token = storedUser?.access; 
 
   // Fetch product details and categories with authentication header
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const { data } = await axios.get(`http://127.0.0.1:8000/api/products/${id}/`, {
+        const { data } = await API.get(`/api/products/${id}/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setProduct(data);
@@ -48,7 +48,7 @@ const AdminProductDetails = () => {
 
     const fetchCategories = async () => {
       try {
-        const { data } = await axios.get("http://127.0.0.1:8000/api/categories/", {
+        const { data } = await API.get("/api/categories/", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setCategories(data);
@@ -86,7 +86,7 @@ const AdminProductDetails = () => {
     }
 
     try {
-      await axios.put(`http://127.0.0.1:8000/api/products/${id}/`, formData, {
+      await API.put(`/api/products/${id}/`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -110,7 +110,7 @@ const AdminProductDetails = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await axios.delete(`http://127.0.0.1:8000/api/products/${id}/`, {
+          await API.delete(`/api/products/${id}/`, {
             headers: { Authorization: `Bearer ${token}` },
           });
           Swal.fire("Deleted!", "The product has been deleted.", "success");
