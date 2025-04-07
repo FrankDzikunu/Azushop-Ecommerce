@@ -11,7 +11,7 @@ urlpatterns = [
     path('api/orders/', include('orders.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-]
+]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # Serve media files in development
 if settings.DEBUG:
