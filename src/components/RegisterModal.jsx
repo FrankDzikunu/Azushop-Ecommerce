@@ -13,12 +13,22 @@ const RegisterModal = ({ onClose, setUser, openLogin }) => {
   const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
-
+  
     if (password !== confirmPassword) {
       setError("Passwords do not match");
       return;
     }
-
+  
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters long");
+      return;
+    }
+  
+    if (/^\d+$/.test(password)) {
+      setError("Password cannot be entirely numeric");
+      return;
+    }
+  
     try {
       setLoading(true);
       const response = await API.post(
@@ -29,7 +39,7 @@ const RegisterModal = ({ onClose, setUser, openLogin }) => {
         }
       );
   
-      const data = response.data; // Axios auto parses JSON
+      const data = response.data;
       localStorage.setItem("user", JSON.stringify(data));
       setUser(data);
       onClose();
@@ -39,6 +49,7 @@ const RegisterModal = ({ onClose, setUser, openLogin }) => {
       setLoading(false);
     }
   };
+  
 
   return (
     <div className="modal-overlay">
