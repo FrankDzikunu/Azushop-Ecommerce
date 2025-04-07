@@ -22,3 +22,6 @@ python manage.py migrate
 
 
 python manage.py runserver
+
+pip freeze > requirements.txt
+
