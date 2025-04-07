@@ -4,12 +4,11 @@ import "./Navbar.css";
 import { FaHome, FaShoppingCart, FaHeart, FaUser, FaCaretDown } from "react-icons/fa";
 import { FiLogIn } from "react-icons/fi";
 import { BiShoppingBag } from "react-icons/bi";
-import axios from "axios";
+import API from "../api";
 import LoginModal from "./LoginModal";
 import RegisterModal from "./RegisterModal";
 import { useNavigate } from "react-router-dom";
 
-const BASE_URL = "http://127.0.0.1:8000";
 
 const Navbar = () => {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -23,7 +22,7 @@ const Navbar = () => {
   // Function to fetch cart count
   const fetchCartCount = async (token) => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/cart/`, {
+      const response = await API.get(`/api/cart/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCartCount(response.data.length);
@@ -35,7 +34,7 @@ const Navbar = () => {
   // Function to fetch favorite count
   const fetchFavoriteCount = async (token) => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/favorites/`, {
+      const response = await API.get(`/api/favorites/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFavoriteCount(response.data.length);

@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import API, { BASE_URL } from "../api";
 import { FaShoppingCart, FaHeart, FaEye } from "react-icons/fa";
 import "./Favourite.css";
-
-const BASE_URL = "http://127.0.0.1:8000";
 
 const Favourite = () => {
   const [favourites, setFavourites] = useState([]);
   const [cart, setCart] = useState(new Set());
   const [favorites, setFavorites] = useState(new Set());
+  
 
   // Retrieve token from localStorage
   const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -23,11 +22,9 @@ const Favourite = () => {
   // Fetch favourite products from backend
   const fetchFavourites = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/favorites/`, {
+      const response = await API.get(`/api/favorites/`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
-      // Expect response data to be an array of favorite objects,
-      // each with a nested product_detail containing product info.
       setFavourites(response.data);
     } catch (error) {
       console.error("Error fetching favourites:", error);
@@ -37,7 +34,7 @@ const Favourite = () => {
   // Fetch cart items from backend
   const fetchCart = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/cart/`, {
+      const response = await API.get(`/api/cart/`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       setCart(new Set(response.data.map((item) => item.product)));
@@ -49,7 +46,7 @@ const Favourite = () => {
   // Remove product from favourites
   const toggleFavourite = async (productId) => {
     try {
-      await axios.delete(`${BASE_URL}/api/favorites/${productId}/`, {
+      await API.delete(`/api/favorites/${productId}/`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       setFavourites((prev) => prev.filter((item) => item.product_detail.id !== productId));
@@ -67,10 +64,14 @@ const Favourite = () => {
   const addToCart = async (productId) => {
     try {
       if (!cart.has(productId)) {
-        await axios.post(`${BASE_URL}/api/cart/${productId}/`, {}, {
+        await API.post(`/api/cart/${productId}/`, {}, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
-        setCart((prev) => new Set(prev).add(productId));
+        const updatedCart = new Set(cart);
+        updatedCart.add(productId);
+        setCart(updatedCart);
+        // Dispatch event to update Navbar counts
+        window.dispatchEvent(new Event("updateCounts"));
       }
     } catch (error) {
       console.error("Error adding to cart:", error);
@@ -118,7 +119,11 @@ const Favourite = () => {
             </div>
           ))
         ) : (
-          <p>No favourite products found.</p>
+          <div className="empty-cart">
+          <img src="/no-products-found.png" alt="No favourite products" className="empty-cart-img" />
+          <p>your favourite is empty.</p>
+          </div>
+          
         )}
       </div>
     </div>

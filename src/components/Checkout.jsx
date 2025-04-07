@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import API, { BASE_URL } from "../api";
 import Swal from "sweetalert2";
 import "./Checkout.css";
 
-const BASE_URL = "http://127.0.0.1:8000"; // Replace with your actual backend URL
 
 const Checkout = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -25,13 +24,13 @@ const Checkout = () => {
   useEffect(() => {
     const fetchCartAndCheckoutDetails = async () => {
       try {
-        const cartResponse = await axios.get(`${BASE_URL}/api/cart/`, {
+        const cartResponse = await API.get(`/api/cart/`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
           withCredentials: true,
         });
         setCartItems(cartResponse.data);
         
-        const checkoutResponse = await axios.get(`${BASE_URL}/api/orders/checkout-details/`, {
+        const checkoutResponse = await API.get(`/api/orders/checkout-details/`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
           withCredentials: true,
         });
@@ -83,7 +82,7 @@ const Checkout = () => {
     };
 
     try {
-      await axios.post(`${BASE_URL}/api/orders/create/`, orderData, {
+      await API.post(`/api/orders/create/`, orderData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import API from "../api";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./Profile.css";
@@ -31,7 +31,7 @@ const Profile = () => {
           },
         };
 
-        const res = await axios.get("http://127.0.0.1:8000/api/profile/", config);
+        const res = await API.get("/api/profile/", config);
         setFormData({
           name: res.data.username,
           email: res.data.email,
@@ -72,8 +72,8 @@ const Profile = () => {
         },
       };
 
-      await axios.put(
-        "http://127.0.0.1:8000/api/profile/update/",
+      await API.put(
+        "/api/profile/update/",
         { name, email, password },
         config
       );

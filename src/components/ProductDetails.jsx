@@ -2,11 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import "./ProductDetails.css";
 import { FaHeart, FaShoppingCart, FaEye } from "react-icons/fa";
-import axios from "axios";
+import API, { BASE_URL } from "../api";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const BASE_URL = "http://127.0.0.1:8000";
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -35,15 +34,15 @@ const ProductDetails = () => {
     const fetchData = async () => {
       try {
         // Fetch product details
-        const productRes = await axios.get(`${BASE_URL}/api/products/${id}/`);
+        const productRes = await API.get(`/api/products/${id}/`);
         setProduct(productRes.data);
 
         // Fetch related products
-        const relatedRes = await axios.get(`${BASE_URL}/api/products/${id}/related/`);
+        const relatedRes = await API.get(`/api/products/${id}/related/`);
         setRelatedProducts(relatedRes.data);
 
         // Fetch all reviews for the product
-        const reviewsRes = await axios.get(`${BASE_URL}/api/products/${id}/reviews/`);
+        const reviewsRes = await API.get(`/api/products/${id}/reviews/`);
         setReviews(reviewsRes.data);
       } catch (err) {
         setError("Error fetching product details");
@@ -66,14 +65,14 @@ const ProductDetails = () => {
       return;
     }
     try {
-      const res = await axios.post(
-        `${BASE_URL}/api/products/${id}/review/`,
+      const res = await API.post(
+        `/api/products/${id}/review/`,
         reviewForm,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       toast.success("Review submitted successfully", { position: "top-right", autoClose: 3000 });
       // Refresh reviews list after submission
-      const reviewsRes = await axios.get(`${BASE_URL}/api/products/${id}/reviews/`);
+      const reviewsRes = await API.get(`/api/products/${id}/reviews/`);
       setReviews(reviewsRes.data);
       setReviewForm({ rating: "", comment: "" });
     } catch (err) {
@@ -88,8 +87,8 @@ const ProductDetails = () => {
       return;
     }
     try {
-      await axios.post(
-        `${BASE_URL}/api/cart/${id}/`,
+      await API.post(
+        `/api/cart/${id}/`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -108,7 +107,7 @@ const ProductDetails = () => {
     // Fetch favorites from backend
     const fetchFavorites = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/favorites/`, {
+        const response = await API.get(`/api/favorites/`, {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         });
@@ -121,7 +120,7 @@ const ProductDetails = () => {
     // Fetch cart from backend
     const fetchCart = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/cart/`, {
+        const response = await API.get(`/api/cart/`, {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         });
@@ -143,14 +142,14 @@ const ProductDetails = () => {
       try {
         let updatedFavorites;
         if (favorites.has(productId)) {
-          await axios.delete(`${BASE_URL}/api/favorites/${productId}/`, {
+          await API.delete(`/api/favorites/${productId}/`, {
             headers: { Authorization: `Bearer ${token}` },
             withCredentials: true,
           });
           updatedFavorites = new Set(favorites);
           updatedFavorites.delete(productId);
         } else {
-          await axios.post(`${BASE_URL}/api/favorites/${productId}/`, {}, {
+          await API.post(`/api/favorites/${productId}/`, {}, {
             headers: { Authorization: `Bearer ${token}` },
             withCredentials: true,
           });
@@ -176,7 +175,7 @@ const ProductDetails = () => {
       }
       try {
         if (!cart.has(productId)) {
-          await axios.post(`${BASE_URL}/api/cart/${productId}/`, {}, {
+          await API.post(`/api/cart/${productId}/`, {}, {
             headers: { Authorization: `Bearer ${token}` },
             withCredentials: true,
           });
@@ -261,7 +260,7 @@ const ProductDetails = () => {
           {relatedProducts.map((p) => (
             <div key={p.id} className="product-card">
               <div className="product-brand">{p.brand}</div>
-              <img src={`${'http://127.0.0.1:8000'}${p.image}`} alt={p.name} className="product-image" />
+              <img src={`${BASE_URL}${p.image}`} alt={p.name} className="product-image" />
               <h3 className="product-name">{p.name}</h3>
               <p className="product-specs">{p.description}</p>
               <span className="product-price">${p.price}</span>

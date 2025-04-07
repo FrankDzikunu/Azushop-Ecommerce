@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import axios from "axios";
+import API, { BASE_URL } from "../api";
 import "./AdminOrderDetails.css";
 
-const BASE_URL = "http://127.0.0.1:8000";
 
 const MyOrderDetails = () => {
   // Use the correct parameter key from the route.
@@ -19,7 +18,7 @@ const MyOrderDetails = () => {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/orders/${id}/`, {
+        const response = await API.get(`/api/orders/${id}/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setOrder(response.data);

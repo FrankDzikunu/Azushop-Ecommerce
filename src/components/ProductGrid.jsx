@@ -6,7 +6,6 @@ import { FaHeart, FaShoppingCart, FaEye } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const BASE_URL = "http://127.0.0.1:8000";
 
 const ProductGrid = () => {
   const [products, setProducts] = useState([]);

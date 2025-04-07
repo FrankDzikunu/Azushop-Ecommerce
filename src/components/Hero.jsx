@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import "./Hero.css";
 import hero1 from "../assets/hero-image1.png";
 import hero2 from "../assets/hero-image2.jpeg";
@@ -38,7 +39,9 @@ const Hero = () => {
       <div className="hero-content">
         <h1>{slides[currentIndex].title}</h1>
         <p>{slides[currentIndex].description}</p>
+        <Link to="/shop">
         <button className="shopnow">Shop Now</button>
+        </Link>
       </div>
     </section>
   );

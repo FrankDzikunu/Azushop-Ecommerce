@@ -1,26 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import API, { BASE_URL } from "../api";
 import "./Cart.css";
-
-const BASE_URL = "http://127.0.0.1:8000";
 
 const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [cart, setCart] = useState(new Set());
 
-  // Retrieve token from localStorage (assuming JWT)
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const token = storedUser?.access;
 
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/cart/`, {
-          headers: token ? { Authorization: `Bearer ${token}` } : {},
-          withCredentials: true,
-        });
+        const response = await API.get("/api/cart/");
         console.log("Cart API response:", response.data);
         setCartItems(Array.isArray(response.data) ? response.data : []);
       } catch (error) {
@@ -32,14 +26,10 @@ const Cart = () => {
     fetchCart();
   }, [token]);
 
-  // Handle quantity change
   const handleQuantityChange = async (id, quantity, maxQuantity) => {
-    if (quantity > maxQuantity) return; // Prevent exceeding max quantity
+    if (quantity > maxQuantity) return;
     try {
-      await axios.put(`${BASE_URL}/api/cart/${id}/`, { quantity }, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        withCredentials: true,
-      });
+      await API.put(`/api/cart/${id}/`, { quantity });
       setCartItems((prevItems) =>
         prevItems.map((item) =>
           item.id === id ? { ...item, quantity } : item
@@ -50,27 +40,19 @@ const Cart = () => {
     }
   };
 
-  // Handle remove from cart
   const handleRemove = async (productId) => {
     try {
-      const response = await axios.delete(`${BASE_URL}/api/cart/${productId}/`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-        withCredentials: true,
-      });
-      // Update cart items with the returned updated cart data
+      const response = await API.delete(`/api/cart/${productId}/`);
       setCartItems(response.data.cart);
       const updatedCart = new Set(cart);
       updatedCart.add(productId);
       setCart(updatedCart);
-      // Dispatch event to update Navbar counts
       window.dispatchEvent(new Event("updateCounts"));
     } catch (error) {
       console.error("Error removing product:", error);
     }
   };
-  
 
-  // Calculate total price using nested product_detail.price
   const totalPrice = Array.isArray(cartItems)
     ? cartItems.reduce(
         (acc, item) =>
@@ -80,12 +62,23 @@ const Cart = () => {
     : 0;
 
   if (loading) {
-    return <p>Loading cart...</p>;
+    return (
+      <div className="cart-loading">
+        <img src="/loading_cart.gif" alt="Loading..." className="loading-gif" />
+      </div>
+    );
   }
+    
 
   if (!loading && cartItems.length === 0) {
-    return <p>Your cart is empty.</p>;
+    return (
+      <div className="empty-cart">
+        <img src="/cart is empty.jpg" alt="Empty Cart" className="empty-cart-img" />
+        <p>Your cart is empty.</p>
+      </div>
+    );
   }
+  
 
   return (
     <div className="cart-container">
@@ -107,21 +100,24 @@ const Cart = () => {
               <tr key={item.id}>
                 <td className="cart-product-info">
                 <img
-                    src={item.product_detail ? `${BASE_URL}${item.product_detail.image}` : ""}
-                    alt={item.product_detail ? item.product_detail.name : "Product"}
-                    className="cart-product-image"
-                  />
+                  src={item.product_detail?.image ? `${BASE_URL}${item.product_detail.image}` : ""}
+                  alt={item.product_detail?.name || "Product"}
+                  className="cart-product-image"
+                />
+
                   <div className="cart-product-details">
                     <p className="cart-product-name">
-                      {item.product_detail ? item.product_detail.name : "Product"}
+                      {item.product_detail?.name || "Product"}
                     </p>
                     <p className="productbrand">
-                      Brand: <span>{item.product_detail ? item.product_detail.brand : ""}</span>
+                      Brand: <span>{item.product_detail?.brand || ""}</span>
                     </p>
-                    <button className="remove-btn" onClick={() => handleRemove(item.product_detail.id)}>
+                    <button
+                      className="remove-btn"
+                      onClick={() => handleRemove(item.product_detail.id)}
+                    >
                       Remove
                     </button>
-
                   </div>
                 </td>
                 <td>
@@ -132,10 +128,14 @@ const Cart = () => {
                     className="quantity-selector"
                     value={item.quantity}
                     onChange={(e) =>
-                      handleQuantityChange(item.id, parseInt(e.target.value), item.product_detail ? item.product_detail.count_in_stock : 5)
+                      handleQuantityChange(
+                        item.id,
+                        parseInt(e.target.value),
+                        item.product_detail?.count_in_stock ?? 5
+                      )
                     }
                   >
-                    {[...Array(item.product_detail ? item.product_detail.count_in_stock : 5)].map((_, index) => (
+                    {[...Array(item.product_detail?.count_in_stock ?? 5)].map((_, index) => (
                       <option key={index + 1} value={index + 1}>
                         {index + 1}
                       </option>

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
-import axios from "axios";
+import API, { BASE_URL } from "../api";
 import "./AdminOrders.css";
 
-const BASE_URL = "http://127.0.0.1:8000";
 
 const AdminOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -16,7 +15,7 @@ const AdminOrders = () => {
       try {
         const storedUser = JSON.parse(localStorage.getItem("user"));
         const token = storedUser?.access;
-        const response = await axios.get(`${BASE_URL}/api/orders/`, {
+        const response = await API.get(`/api/orders/`, {
           headers: { Authorization: token ? `Bearer ${token}` : "" },
         });
         setOrders(response.data);

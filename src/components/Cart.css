@@ -7,6 +7,25 @@
     margin-bottom: 250px;
 
   }
+
+.cart-loading,
+.empty-cart {
+    text-align: center;
+    padding: 40px;
+    margin: 0 auto;
+  }
+
+.loading-gif {
+    width: 500px;
+    height: auto;
+  }
+
+.empty-cart-img {
+    width: 200px;
+    max-width: 80%;
+    height: auto;
+    margin-bottom: 20px;
+  }
   
   .breadcrumb {
     font-size: 14px;
