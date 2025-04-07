@@ -73,6 +73,8 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 CORS_ALLOWED_ORIGINS = [
     "https://azushop-swart.vercel.app",  # Vercel frontend URL
     "http://localhost:5173",  # React frontend URL
@@ -181,3 +183,10 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 MEDIA_URL = ""
 MEDIA_ROOT = os.path.join(BASE_DIR, "product_images")
+
+if not DEBUG:
+    # Only when deployed
+    MEDIA_URL = ''
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'product_images')
+    STATIC_URL = '/static/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
