@@ -82,7 +82,7 @@ const AdminCreateProduct = () => {
     formData.append("category", product.category);
     formData.append("description", product.description);
     formData.append("is_active", "true");
-    formData.append("image", product.image); // already validated above
+    formData.append("image", product.image); 
   
     try {
       const response = await API.post(`/api/products/`, formData, {

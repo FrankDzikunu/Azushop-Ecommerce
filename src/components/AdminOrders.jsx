@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FaEye } from "react-icons/fa";
-import API, { BASE_URL } from "../api";
+import API from "../api";
 import "./AdminOrders.css";
 
 
@@ -39,7 +39,14 @@ const AdminOrders = () => {
         </div>
         {error && <p className="error-message">{error}</p>}
         {loading ? (
-          <p>Loading orders...</p>
+                      <div className="loading-container">
+                      <img
+                        src="/load-35_256.gif" 
+                        alt="Loading..."
+                        className="loading-gif"
+                      />
+                      <p>Loading orders...</p>
+                    </div>
         ) : (
           <table className="orders-table">
             <thead>
@@ -71,7 +78,7 @@ const AdminOrders = () => {
                         src={
                           orderImage.startsWith("http")
                             ? orderImage
-                            : `${BASE_URL}${orderImage}`
+                            : `${orderImage}`
                         }
                         alt="Product"
                         className="order-image"

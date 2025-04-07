@@ -181,6 +181,11 @@
     color: #007bff;
   }
   
+ .productgrid .loading-gif {
+    width: 250px; 
+    height: 250px;
+  }
+
   /* Responsive */
   @media (max-width: 1024px) {
     .product-grid {

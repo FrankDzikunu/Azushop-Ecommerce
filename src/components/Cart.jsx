@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import API, { BASE_URL } from "../api";
+import API from "../api";
 import "./Cart.css";
 
 const Cart = () => {
@@ -100,7 +100,7 @@ const Cart = () => {
               <tr key={item.id}>
                 <td className="cart-product-info">
                 <img
-                  src={item.product_detail?.image ? `${BASE_URL}${item.product_detail.image}` : ""}
+                  src={item.product_detail?.image ? `${item.product_detail.image}` : ""}
                   alt={item.product_detail?.name || "Product"}
                   className="cart-product-image"
                 />

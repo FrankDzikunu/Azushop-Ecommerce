@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import API, { BASE_URL } from "../api";
+import API from "../api";
 import { FaShoppingCart, FaHeart, FaEye } from "react-icons/fa";
 import "./Favourite.css";
 
@@ -8,15 +8,18 @@ const Favourite = () => {
   const [favourites, setFavourites] = useState([]);
   const [cart, setCart] = useState(new Set());
   const [favorites, setFavorites] = useState(new Set());
-  
+  const [loading, setLoading] = useState(true);
 
   // Retrieve token from localStorage
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const token = storedUser?.access;
 
   useEffect(() => {
-    fetchFavourites();
-    fetchCart();
+    const fetchData = async () => {
+      await Promise.all([fetchFavourites(), fetchCart()]);
+      setLoading(false); //Turn off loading after fetching
+    };
+    fetchData();
   }, [token]);
 
   // Fetch favourite products from backend
@@ -85,12 +88,21 @@ const Favourite = () => {
       </nav>
 
       <div className="favourite-content">
-        {favourites.length > 0 ? (
+        {loading ? (
+            <div className="loading-container">
+            <img
+              src="/load-35_256.gif" 
+              alt="Loading..."
+              className="loading-gif"
+            />
+            <p>Your favourite is loading...</p>
+          </div>
+        ) : favourites.length > 0 ? (
           favourites.map((item) => (
             <div key={item.id} className="product-card">
               <span className="brand-label">{item.product_detail?.brand || "Unknown"}</span>
               <img
-                src={item.product_detail?.image ? `${BASE_URL}${item.product_detail.image}` : "/images/default.png"}
+                src={item.product_detail?.image ? `${item.product_detail.image}` : "/images/default.png"}
                 alt={item.product_detail?.name || "Product"}
                 className="product-image"
               />
@@ -120,10 +132,9 @@ const Favourite = () => {
           ))
         ) : (
           <div className="empty-cart">
-          <img src="/no-products-found.png" alt="No favourite products" className="empty-cart-img" />
-          <p>your favourite is empty.</p>
+            <img src="/no-products-found.png" alt="No favourite products" className="empty-cart-img" />
+            <p>your favourite is empty.</p>
           </div>
-          
         )}
       </div>
     </div>

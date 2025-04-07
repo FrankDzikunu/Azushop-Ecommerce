@@ -4,14 +4,16 @@ import "./AdminProducts.css";
 import { FaPen } from "react-icons/fa";
 import API, { BASE_URL } from "../api";
 
-
+// Helper function to get the image URL
 const getImageUrl = (image) => {
   if (!image) return "/images/default.png"; // Default image if no image is provided
   if (image.startsWith("http")) return image; // Return the full URL if it's already absolute
   return `${BASE_URL}/${image.replace(/^\/+/, "")}`;
 };
+
 const AdminProducts = () => {
   const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // Loading state
 
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -23,9 +25,11 @@ const AdminProducts = () => {
       })
       .then((res) => {
         setProducts(res.data);
+        setIsLoading(false); // Data has loaded
       })
       .catch((error) => {
         console.error("Error fetching products:", error);
+        setIsLoading(false); // Stop loading even if there's an error
       });
   }, []);
 
@@ -48,27 +52,38 @@ const AdminProducts = () => {
         </div>
 
         <div className="admin-product-grid">
-          {products.map((product, index) => (
-            <div className="Admin-product-card" key={product.id || index}>
-              <img 
-                src={getImageUrl(product.image)} 
-                alt={product.name || "Product Image"} 
-                className="product-image" 
+          {isLoading ? (
+            <div className="loading-container">
+              <img
+                src="/load-35_256.gif" 
+                alt="Loading..."
+                className="loading-gif"
               />
-              <h3 className="product-name">{product.name}</h3>
-              <p className="product-description">{product.description}</p>
-              <p className="productprice">${product.price}</p>
-              <div className="product-footer">
-              <div className="straigthline"></div>
-                <Link to={`/admin/updateproduct/${product.id}`}>
-                  <FaPen className="edit-icon" />
-                </Link>
-                <span className="product-date">
-                  {new Date(product.created_at).toLocaleDateString()}
-                </span>
-              </div>
+              <p>Product loading...</p>
             </div>
-          ))}
+          ) : (
+            products.map((product, index) => (
+              <div className="Admin-product-card" key={product.id || index}>
+                <img 
+                  src={getImageUrl(product.image)} 
+                  alt={product.name || "Product Image"} 
+                  className="product-image" 
+                />
+                <h3 className="product-name">{product.name}</h3>
+                <p className="product-description">{product.description}</p>
+                <p className="productprice">${product.price}</p>
+                <div className="product-footer">
+                  <div className="straigthline"></div>
+                  <Link to={`/admin/updateproduct/${product.id}`}>
+                    <FaPen className="edit-icon" />
+                  </Link>
+                  <span className="product-date">
+                    {new Date(product.created_at).toLocaleDateString()}
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

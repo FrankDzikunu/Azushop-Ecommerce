@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import API, { BASE_URL } from "../api";
+import API from "../api";
 import Swal from "sweetalert2";
 import "./Checkout.css";
 
@@ -16,6 +16,7 @@ const Checkout = () => {
   const [shippingFee, setShippingFee] = useState(0);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("");
+  const [loading, setLoading] = useState(true);
 
   // Retrieve token from localStorage like in AdminProducts.jsx
   const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -29,7 +30,7 @@ const Checkout = () => {
           withCredentials: true,
         });
         setCartItems(cartResponse.data);
-        
+
         const checkoutResponse = await API.get(`/api/orders/checkout-details/`, {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
           withCredentials: true,
@@ -37,20 +38,24 @@ const Checkout = () => {
         setTax(checkoutResponse.data.tax);
         setShippingFee(checkoutResponse.data.shippingFee);
         setPaymentMethods(checkoutResponse.data.paymentMethods);
-        // Set default selected payment method to the first option
-        if (checkoutResponse.data.paymentMethods && checkoutResponse.data.paymentMethods.length > 0) {
+
+        if (checkoutResponse.data.paymentMethods.length > 0) {
           setSelectedPaymentMethod(checkoutResponse.data.paymentMethods[0]);
         }
+
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching checkout details:", error);
         Swal.fire("Error", "Failed to load checkout details. Please log in again.", "error");
+        setLoading(false); 
       }
     };
-  
+
     if (token) {
       fetchCartAndCheckoutDetails();
     } else {
       Swal.fire("Login Required", "You need to log in to proceed.", "warning");
+      setLoading(false);
     }
   }, [token]);
 
@@ -103,42 +108,51 @@ const Checkout = () => {
         Home / <span className="active">Cart</span>
       </nav>
 
-      <div className="checkout-content">
-        {/* Billing Details Section */}
-        <div className="billing-section">
-          <h3>Billing Details</h3>
-          <form className="billing-form">
-            <input
-              type="text"
-              name="address"
-              placeholder="Address *"
-              value={billingDetails.address}
-              onChange={handleChange}
-              required
+      {loading ? (
+            <div className="loading-container">
+            <img
+              src="/load-35_256.gif" 
+              alt="Loading..."
+              className="loading-gif"
             />
-            <input
-              type="text"
-              name="city"
-              placeholder="City"
-              value={billingDetails.city}
-              onChange={handleChange}
-            />
-            <input
-              type="text"
-              name="postalCode"
-              placeholder="Postal code"
-              value={billingDetails.postalCode}
-              onChange={handleChange}
-            />
-            <input
-              type="text"
-              name="country"
-              placeholder="Country"
-              value={billingDetails.country}
-              onChange={handleChange}
-            />
-          </form>
-        </div>
+            <p>Product loading...</p>
+          </div>
+      ) : (
+        <div className="checkout-content">
+          <div className="billing-section">
+            <h3>Billing Details</h3>
+            <form className="billing-form">
+              <input
+                type="text"
+                name="address"
+                placeholder="Address *"
+                value={billingDetails.address}
+                onChange={handleChange}
+                required
+              />
+              <input
+                type="text"
+                name="city"
+                placeholder="City"
+                value={billingDetails.city}
+                onChange={handleChange}
+              />
+              <input
+                type="text"
+                name="postalCode"
+                placeholder="Postal code"
+                value={billingDetails.postalCode}
+                onChange={handleChange}
+              />
+              <input
+                type="text"
+                name="country"
+                placeholder="Country"
+                value={billingDetails.country}
+                onChange={handleChange}
+              />
+            </form>
+          </div>
 
         {/* Products & Summary Section */}
         <div className="summary-section">
@@ -147,7 +161,7 @@ const Checkout = () => {
             {cartItems.map((item) => (
               <div className="product-item" key={item.id}>
                 <img
-                  src={`${BASE_URL}${item.product_detail.image}`}
+                  src={`${item.product_detail.image}`}
                   alt={item.product_detail.name}
                   className="productimage"
                 />
@@ -197,6 +211,7 @@ const Checkout = () => {
           </div>
         </div>
       </div>
+       )}
     </div>
   );
 };

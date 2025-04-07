@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import API, { BASE_URL } from "../api";
+import API from "../api";
 import "./AdminOrderDetails.css";
 
 
@@ -47,7 +47,15 @@ const AdminOrderDetails = () => {
     }
   };
 
-  if (loading) return <p>Loading order details...</p>;
+  if (loading) return           
+          <div className="loading-container">
+            <img
+              src="/load-35_256.gif" 
+              alt="Loading..."
+              className="loading-gif"
+            />
+            <p>Loading order details..</p>
+          </div>;
   if (error) return <p>{error}</p>;
   if (!order) return <p>No order found.</p>;
 
@@ -77,7 +85,7 @@ const AdminOrderDetails = () => {
                         src={
                           item.product_image.startsWith("http")
                             ? item.product_image
-                            : `${BASE_URL}${item.product_image}`
+                            : `${item.product_image}`
                         }
                         alt={item.product_name}
                         className="order-item-image"

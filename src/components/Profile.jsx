@@ -13,7 +13,8 @@ const Profile = () => {
     confirmPassword: "",
   });
 
-  // Get token from localStorage
+  const [loading, setLoading] = useState(true); // 🔁 Loading state
+
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const token = storedUser?.access;
 
@@ -21,6 +22,7 @@ const Profile = () => {
     const fetchProfile = async () => {
       if (!token) {
         toast.error("You must be logged in to view profile");
+        setLoading(false);
         return;
       }
 
@@ -41,6 +43,8 @@ const Profile = () => {
       } catch (error) {
         toast.error("Failed to load profile. Please login again.");
         console.error(error);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -72,12 +76,7 @@ const Profile = () => {
         },
       };
 
-      await API.put(
-        "/api/profile/update/",
-        { name, email, password },
-        config
-      );
-
+      await API.put("/api/profile/update/", { name, email, password }, config);
       toast.success("Profile updated successfully");
     } catch (error) {
       toast.error("Failed to update profile");
@@ -89,54 +88,66 @@ const Profile = () => {
     <div className="profile-container">
       <ToastContainer />
       <Link to="/" className="backbutton">← Back</Link>
-      <div className="product-container1">
-        <div className="profile-card">
-          <div className="profile-tabs">
-            <span className="active-tab">Update Profile</span>
-            <Link to="/myorders/:id">
-              <span className="inactive-tab">My orders</span>
-            </Link>
-          </div>
 
-          <form onSubmit={handleSubmit} className="profile-form">
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              className="profile-input"
-            />
-
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="profile-input"
-            />
-
-            <input
-              type="password"
-              name="password"
-              placeholder="Password"
-              value={formData.password}
-              onChange={handleChange}
-              className="profile-input"
-            />
-
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="Confirm password"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              className="profile-input"
-            />
-
-            <button type="submit" className="update-button">Update</button>
-          </form>
+      {loading ? (
+          <div className="loading-container">
+          <img
+            src="/load-35_256.gif" 
+            alt="Loading..."
+            className="loading-gif"
+          />
+          <p>Loading profile..</p>
         </div>
-      </div>
+      ) : (
+        <div className="product-container1">
+          <div className="profile-card">
+            <div className="profile-tabs">
+              <span className="active-tab">Update Profile</span>
+              <Link to="/myorders/:id">
+                <span className="inactive-tab">My orders</span>
+              </Link>
+            </div>
+
+            <form onSubmit={handleSubmit} className="profile-form">
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="profile-input"
+              />
+
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                className="profile-input"
+              />
+
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className="profile-input"
+              />
+
+              <input
+                type="password"
+                name="confirmPassword"
+                placeholder="Confirm password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                className="profile-input"
+              />
+
+              <button type="submit" className="update-button">Update</button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

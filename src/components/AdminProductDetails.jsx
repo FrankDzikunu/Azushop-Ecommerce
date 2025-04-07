@@ -6,15 +6,10 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
 
-
-
-
-
 const AdminProductDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  
-  // Initialize product state
+
   const [product, setProduct] = useState({
     name: "",
     price: "",
@@ -28,12 +23,11 @@ const AdminProductDetails = () => {
 
   const [categories, setCategories] = useState([]);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [loading, setLoading] = useState(true); 
 
-  // Retrieve token from localStorage stored under "user"
   const storedUser = JSON.parse(localStorage.getItem("user"));
-  const token = storedUser?.access; 
+  const token = storedUser?.access;
 
-  // Fetch product details and categories with authentication header
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -57,8 +51,13 @@ const AdminProductDetails = () => {
       }
     };
 
-    fetchProduct();
-    fetchCategories();
+    const fetchData = async () => {
+      setLoading(true);
+      await Promise.all([fetchProduct(), fetchCategories()]);
+      setLoading(false);
+    };
+
+    fetchData();
   }, [id, token]);
 
   const handleChange = (e) => {
@@ -106,7 +105,7 @@ const AdminProductDetails = () => {
       showCancelButton: true,
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
-      confirmButtonText: "Yes, delete it!"
+      confirmButtonText: "Yes, delete it!",
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
@@ -121,113 +120,118 @@ const AdminProductDetails = () => {
       }
     });
   };
-  
 
   return (
     <div className="admin-product-details">
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} />
       <Link to="/" className="backbutton">← Back</Link>
-      <div className="product-container1">
-        <div className="admin-tabs">
-          <Link to="/admin/products">
-            <span className="non-active-tab">Products</span>
-          </Link>
-          <span className="active-tab">Update Product</span>
-        </div>
 
-        <div className="product-image-container">
-        <img 
-            src={selectedFile ? URL.createObjectURL(selectedFile) : product.image || null} 
-            alt="Product" 
-            className="product-image" 
+      {loading ? (
+          <div className="loading-container">
+          <img
+            src="/load-35_256.gif" 
+            alt="Loading..."
+            className="loading-gif"
           />
-          <div className="file-upload">
-            <input type="file" id="file" onChange={handleFileChange} hidden />
-            <label htmlFor="file" className="file-label">Choose file</label>
-            <span className="file-chosen">
-              {selectedFile ? selectedFile.name : "No file chosen"}
-            </span>
-          </div>
+          <p>Loading product details..</p>
         </div>
-
-        <form onSubmit={handleUpdate} className="productform">
-          <div className="input-group">
-            <input
-              type="text"
-              name="name"
-              value={product.name}
-              onChange={handleChange}
-              required
-            />
-            <input
-              type="text"
-              name="price"
-              value={product.price}
-              onChange={handleChange}
-              required
-            />
+      ) : (
+        <div className="product-container1">
+          <div className="admin-tabs">
+            <Link to="/admin/products">
+              <span className="non-active-tab">Products</span>
+            </Link>
+            <span className="active-tab">Update Product</span>
           </div>
 
-          <div className="input-group">
-            <input
-              type="text"
-              name="quantity"
-              value={product.quantity}
+          <div className="product-image-container">
+            <img
+              src={selectedFile ? URL.createObjectURL(selectedFile) : product.image || null}
+              alt="Product"
+              className="product-image"
+            />
+            <div className="file-upload">
+              <input type="file" id="file" onChange={handleFileChange} hidden />
+              <label htmlFor="file" className="file-label">Choose file</label>
+              <span className="file-chosen">
+                {selectedFile ? selectedFile.name : "No file chosen"}
+              </span>
+            </div>
+          </div>
+
+          <form onSubmit={handleUpdate} className="productform">
+            <div className="input-group">
+              <input
+                type="text"
+                name="name"
+                value={product.name}
+                onChange={handleChange}
+                required
+              />
+              <input
+                type="text"
+                name="price"
+                value={product.price}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="input-group">
+              <input
+                type="text"
+                name="quantity"
+                value={product.quantity}
+                onChange={handleChange}
+                required
+              />
+              <input
+                type="text"
+                name="brand"
+                value={product.brand}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="input-group">
+              <input
+                type="text"
+                name="count_in_stock"
+                value={product.count_in_stock}
+                onChange={handleChange}
+                required
+              />
+              <select
+                name="category"
+                value={product.category}
+                onChange={handleChange}
+                required
+              >
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <textarea
+              name="description"
+              value={product.description}
               onChange={handleChange}
               required
             />
-            <input
-              type="text"
-              name="brand"
-              value={product.brand}
-              onChange={handleChange}
-              required
-            />
-          </div>
 
-          <div className="input-group">
-            <input
-              type="text"
-              name="count_in_stock"
-              value={product.count_in_stock}
-              onChange={handleChange}
-              required
-            />
-            <select
-              name="category"
-              value={product.category}
-              onChange={handleChange}
-              required
-            >
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <textarea
-            name="description"
-            value={product.description}
-            onChange={handleChange}
-            required
-          />
-
-          <div className="button-group">
-            <button type="submit" className="update-button">
-              Update
-            </button>
-            <button
-              type="button"
-              className="delete-button"
-              onClick={handleDelete}
-            >
-              Delete
-            </button>
-          </div>
-        </form>
-      </div>
+            <div className="button-group">
+              <button type="submit" className="update-button">Update</button>
+              <button type="button" className="delete-button" onClick={handleDelete}>
+                Delete
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 };

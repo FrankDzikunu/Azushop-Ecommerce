@@ -10,6 +10,7 @@ const AdminCategory = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   // Fetch categories from backend on mount
   useEffect(() => {
@@ -17,17 +18,19 @@ const AdminCategory = () => {
   }, []);
 
   const fetchCategories = async () => {
+    setLoading(true); // Start loading
     try {
       const storedUser = JSON.parse(localStorage.getItem("user"));
       const token = storedUser?.access;
       const response = await API.get(`/api/category/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      // Assuming the backend now returns an array of objects [{id, name}, ...]
       setCategories(response.data);
     } catch (err) {
       console.error("Error fetching categories:", err);
       setError("Failed to load categories.");
+    } finally {
+      setLoading(false); // End loading
     }
   };
 
@@ -80,8 +83,18 @@ const AdminCategory = () => {
   return (
     <div className="admin-category">
       <Link to="/" className="backbutton">← Back</Link>
-      <div className="product-container1" style={{ marginBottom: "290px" }}>
-        <h3 className="admin-tabs"> Update Category</h3>
+      {loading ? (
+          <div className="loading-container">
+          <img
+            src="/load-35_256.gif" 
+            alt="Loading..."
+            className="loading-gif"
+          />
+          <p>Loading Categories...</p>
+        </div>
+      ) : (
+        <div className="product-container1" style={{ marginBottom: "290px" }}>
+          <h3 className="admin-tabs"> Update Category</h3>
 
         {error && <p className="error-message">{error}</p>}
 
@@ -106,6 +119,7 @@ const AdminCategory = () => {
           ))}
         </div>
       </div>
+      )}
     </div>
   );
 };

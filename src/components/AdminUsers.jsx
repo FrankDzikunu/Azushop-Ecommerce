@@ -5,9 +5,9 @@ import Swal from "sweetalert2";
 import API from "../api";
 import "./AdminUsers.css";
 
-
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -20,6 +20,8 @@ const AdminUsers = () => {
         setUsers(response.data);
       } catch (error) {
         console.error("Error fetching users:", error);
+      } finally {
+        setLoading(false); 
       }
     };
     fetchUsers();
@@ -58,50 +60,61 @@ const AdminUsers = () => {
   return (
     <div className="admin-users-container">
       <Link to="/" className="backbutton">← Back</Link>
-      <div className="product-container1">
-        <div className="admin-tabs">
-          <h2 className="active-tab">Users</h2>
+
+      {loading ? (
+          <div className="loading-container">
+          <img
+            src="/load-35_256.gif" 
+            alt="Loading..."
+            className="loading-gif"
+          />
+          <p>Loading users..</p>
         </div>
-        <table className="users-table">
-          <thead>
-            <tr>
-              <th>Id</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Admin</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => {
-              // Check if the user is an admin by either "isAdmin" or "is_staff"
-              const isUserAdmin = user.isAdmin || user.is_staff;
-              return (
-                <tr key={user.id}>
-                  <td>{user.id}</td>
-                  <td>{user.username}</td>
-                  <td>{user.email}</td>
-                  <td>
-                    {isUserAdmin ? (
-                      <FaCheck className="check-icon" />
-                    ) : (
-                      <FaTimes className="cross-icon" />
-                    )}
-                  </td>
-                  <td className="actions">
-                    <button className="edit-btn" onClick={() => handleEdit(user.id)}>
-                      <FaEdit />
-                    </button>
-                    <button className="delete-btn" onClick={() => handleDelete(user.id)}>
-                      <FaTrash />
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      ) : (
+        <div className="product-container1">
+          <div className="admin-tabs">
+            <h2 className="active-tab">Users</h2>
+          </div>
+          <table className="users-table">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Admin</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user) => {
+                const isUserAdmin = user.isAdmin || user.is_staff;
+                return (
+                  <tr key={user.id}>
+                    <td>{user.id}</td>
+                    <td>{user.username}</td>
+                    <td>{user.email}</td>
+                    <td>
+                      {isUserAdmin ? (
+                        <FaCheck className="check-icon" />
+                      ) : (
+                        <FaTimes className="cross-icon" />
+                      )}
+                    </td>
+                    <td className="actions">
+                      <button className="edit-btn" onClick={() => handleEdit(user.id)}>
+                        <FaEdit />
+                      </button>
+                      <button className="delete-btn" onClick={() => handleDelete(user.id)}>
+                        <FaTrash />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

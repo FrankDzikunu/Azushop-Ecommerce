@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import "./ProductDetails.css";
 import { FaHeart, FaShoppingCart, FaEye } from "react-icons/fa";
-import API, { BASE_URL } from "../api";
+import API from "../api";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -190,7 +190,15 @@ const ProductDetails = () => {
       }
     };
 
-  if (loading) return <div>Loading product details...</div>;
+  if (loading) return             
+          <div className="loading-container">
+          <img
+            src="/load-35_256.gif" 
+            alt="Loading..."
+            className="loading-gif"
+          />
+          <p>Loading product details...</p>
+        </div>;
   if (error) return <div>{error}</div>;
   if (!product) return <div>No product found</div>;
 
@@ -260,7 +268,7 @@ const ProductDetails = () => {
           {relatedProducts.map((p) => (
             <div key={p.id} className="product-card">
               <div className="product-brand">{p.brand}</div>
-              <img src={`${BASE_URL}${p.image}`} alt={p.name} className="product-image" />
+              <img src={p.image} alt={p.name} className="product-image" />
               <h3 className="product-name">{p.name}</h3>
               <p className="product-specs">{p.description}</p>
               <span className="product-price">${p.price}</span>
