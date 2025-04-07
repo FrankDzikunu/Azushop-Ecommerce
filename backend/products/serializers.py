@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.conf import settings
 from .models import Product, Category, Favorite, CartItem, Review
 from django.db.models import Avg, Count
 
@@ -6,6 +7,8 @@ class ProductSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
     rating = serializers.SerializerMethodField()
     num_reviews = serializers.SerializerMethodField()
+    image = serializers.SerializerMethodField()  
+
     class Meta:
         model = Product
         fields = '__all__'
@@ -14,9 +17,15 @@ class ProductSerializer(serializers.ModelSerializer):
     def get_rating(self, obj):
         average = Review.objects.filter(product=obj).aggregate(avg_rating=Avg('rating'))['avg_rating']
         return round(average, 1) if average is not None else 0.0
-    
+
     def get_num_reviews(self, obj):
         return Review.objects.filter(product=obj).count()
+
+    def get_image(self, obj):
+        if obj.image:
+            return obj.image.url  # full Cloudinary URL
+        return None
+
 
 
 class CategorySerializer(serializers.ModelSerializer):
