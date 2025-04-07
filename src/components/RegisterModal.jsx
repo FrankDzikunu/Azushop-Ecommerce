@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./RegisterModal.css";
+import API from "../api";
 
 const RegisterModal = ({ onClose, setUser, openLogin }) => {
   const [name, setName] = useState(""); // Full name, will be used as username
@@ -20,21 +21,20 @@ const RegisterModal = ({ onClose, setUser, openLogin }) => {
 
     try {
       setLoading(true);
-      const response = await fetch("http://127.0.0.1:8000/api/register/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        // Send 'name' field which the backend will use as username
-        body: JSON.stringify({ name, email, password }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.detail || "Registration failed");
-
+      const response = await API.post(
+        "/api/register/",
+        { name, email, password },
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+  
+      const data = response.data; // Axios auto parses JSON
       localStorage.setItem("user", JSON.stringify(data));
       setUser(data);
-      onClose(); // Close Register Modal
+      onClose();
     } catch (err) {
-      setError(err.message);
+      setError(err.response?.data?.detail || "Registration failed");
     } finally {
       setLoading(false);
     }

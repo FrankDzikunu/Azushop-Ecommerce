@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import API from "../api";
 import "./ProductGrid.css";
 import { FaHeart, FaShoppingCart, FaEye } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";
@@ -34,7 +34,7 @@ const ProductGrid = () => {
   // Fetch products from backend
   const fetchProducts = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/products/`);
+      const response = await API.get(`/api/products/`);
       setProducts(response.data);
       const brandSet = new Set(response.data.map((p) => p.brand));
       setBrands([...brandSet]);
@@ -46,7 +46,7 @@ const ProductGrid = () => {
   // Fetch categories from backend
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/categories/`);
+      const response = await API.get(`/api/categories/`);
       setCategories(response.data);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -56,7 +56,7 @@ const ProductGrid = () => {
   // Fetch favorites from backend
   const fetchFavorites = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/favorites/`, {
+      const response = await API.get(`/api/favorites/`, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
@@ -69,7 +69,7 @@ const ProductGrid = () => {
   // Fetch cart from backend
   const fetchCart = async () => {
     try {
-      const response = await axios.get(`${BASE_URL}/api/cart/`, {
+      const response = await API.get(`/api/cart/`, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       });
@@ -91,14 +91,14 @@ const ProductGrid = () => {
     try {
       let updatedFavorites;
       if (favorites.has(productId)) {
-        await axios.delete(`${BASE_URL}/api/favorites/${productId}/`, {
+        await API.delete(`/api/favorites/${productId}/`, {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         });
         updatedFavorites = new Set(favorites);
         updatedFavorites.delete(productId);
       } else {
-        await axios.post(`${BASE_URL}/api/favorites/${productId}/`, {}, {
+        await API.post(`/api/favorites/${productId}/`, {}, {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         });
@@ -124,7 +124,7 @@ const ProductGrid = () => {
     }
     try {
       if (!cart.has(productId)) {
-        await axios.post(`${BASE_URL}/api/cart/${productId}/`, {}, {
+        await API.post(`/api/cart/${productId}/`, {}, {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         });
