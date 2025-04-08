@@ -3,8 +3,11 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from . import views
+
 
 urlpatterns = [
+    path('', views.home, name='home'),
     path('admin/', admin.site.urls),
     path('api/', include('api.urls')),  # User Authentication
     path('api/', include('products.urls')),  # Product Management
