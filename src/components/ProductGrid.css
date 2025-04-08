@@ -186,6 +186,16 @@
     height: 250px;
   }
 
+  .no-products {
+    text-align: center;
+    padding: 2rem;
+  }
+  .no-products-image {
+    max-width: 200px;
+    opacity: 0.7;
+    margin-bottom: 1rem;
+  }
+  
   /* Responsive */
   @media (max-width: 1024px) {
     .product-grid {

@@ -16,6 +16,8 @@ const ProductGrid = () => {
   const [priceRange, setPriceRange] = useState("");
   const [favorites, setFavorites] = useState(new Set());
   const [cart, setCart] = useState(new Set());
+  const [loading, setLoading] = useState(true);
+
 
   // Retrieve token from localStorage (if any)
   const storedUser = JSON.parse(localStorage.getItem("user"));
@@ -32,6 +34,7 @@ const ProductGrid = () => {
 
   // Fetch products from backend
   const fetchProducts = async () => {
+    setLoading(true);
     try {
       const response = await API.get(`/api/products/`);
       setProducts(response.data);
@@ -39,8 +42,11 @@ const ProductGrid = () => {
       setBrands([...brandSet]);
     } catch (error) {
       console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
     }
   };
+  
 
   // Fetch categories from backend
   const fetchCategories = async () => {
@@ -243,7 +249,12 @@ const ProductGrid = () => {
 
           {/* Product Grid */}
           <div className="productgrid">
-            {filteredProducts.length > 0 ? (
+          {loading ? (
+            <div className="cart-loading">
+              <img src="/load-35_256.gif" alt="Loading..." className="loading-gif" />
+              <p>Loading products...</p>
+            </div>
+            ) : filteredProducts.length > 0 ? (
               filteredProducts.map((product) => (
                 <div key={product.id} className="product-card">
                   <div className="product-brand">{product.brand}</div>
@@ -269,12 +280,12 @@ const ProductGrid = () => {
                 </div>
               ))
             ) : (
-              <div className="cart-loading">
-              <img src="/load-35_256.gif" alt="Loading..." className="loading-gif" />
-              <p>Loading products...</p>
-            </div>
-              
+              <div className="no-products">
+                <img src="/no-products-found.png" alt="No Products Found" className="no-products-image" />
+                <p>No products match your filters.</p>
+              </div>
             )}
+
           </div>
         </div>
       </div>
