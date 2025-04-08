@@ -39,14 +39,18 @@ const AdminOrders = () => {
         </div>
         {error && <p className="error-message">{error}</p>}
         {loading ? (
-                      <div className="loading-container">
-                      <img
-                        src="/load-35_256.gif" 
-                        alt="Loading..."
-                        className="loading-gif"
-                      />
-                      <p>Loading orders...</p>
-                    </div>
+          <div className="loading-container">
+          <img
+            src="/load-35_256.gif" 
+            alt="Loading..."
+            className="loading-gif"
+          />
+            <div class="wave-container">
+              <h1 class="wave-text">
+              <span>L</span> <span>O</span> <span>A</span> <span>D</span> <span>I</span> <span>N</span> <span>G</span> <span> . </span> <span>.</span> <span>.</span> 
+              </h1>
+            </div>
+        </div>
         ) : (
           <table className="orders-table">
             <thead>
