@@ -38,9 +38,25 @@ const AdminOrders = () => {
           <h2 className="active-tab">My Orders</h2>
         </div>
         {error && <p className="error-message">{error}</p>}
-        {loading ? (
-          <p>Loading orders...</p>
-        ) : (
+          {loading ? (
+                <div className="loading-container">
+                <img
+                  src="/load-35_256.gif" 
+                  alt="Loading..."
+                  className="loading-gif"
+                />
+                <p>Loading orders...</p>
+              </div>
+          ) : orders.length === 0 ? (
+            <div className="empty-orders">
+              <img
+                src="/empty-orders.png"
+                alt="No orders"
+                className="empty-orders-image"
+              />
+              <p>You have no orders yet.</p>
+            </div>
+          ) : (
           <table className="orders-table">
             <thead>
               <tr>

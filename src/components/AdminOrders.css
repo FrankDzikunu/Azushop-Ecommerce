@@ -64,3 +64,16 @@
     background-color: #00265e;
   }
   
+  .empty-orders {
+    text-align: center;
+    padding: 40px 20px;
+    color: #555;
+  }
+  
+  .empty-orders-image {
+    max-width: 300px;
+    width: 100%;
+    margin-bottom: 20px;
+    opacity: 0.8;
+  }
+  
