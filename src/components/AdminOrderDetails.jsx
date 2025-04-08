@@ -47,15 +47,14 @@ const AdminOrderDetails = () => {
     }
   };
 
-  if (loading) return           
-          <div className="loading-container">
-            <img
-              src="/load-35_256.gif" 
-              alt="Loading..."
-              className="loading-gif"
-            />
-            <p>Loading order details..</p>
-          </div>;
+  if (loading) {
+    return (
+      <div className="loading-container">
+        <img src="/load-35_256.gif" alt="Loading..." className="loading-gif" />
+        <p>Loading order details...</p>
+      </div>
+    );
+  }
   if (error) return <p>{error}</p>;
   if (!order) return <p>No order found.</p>;
 

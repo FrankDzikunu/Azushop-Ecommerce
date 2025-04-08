@@ -190,15 +190,15 @@ const ProductDetails = () => {
       }
     };
 
-  if (loading) return             
-          <div className="loading-container">
-          <img
-            src="/load-35_256.gif" 
-            alt="Loading..."
-            className="loading-gif"
-          />
+    if (loading) {
+      return (
+        <div className="loading-container">
+          <img src="/load-35_256.gif" alt="Loading..." className="loading-gif" />
           <p>Loading product details...</p>
-        </div>;
+        </div>
+      );
+    }
+    
   if (error) return <div>{error}</div>;
   if (!product) return <div>No product found</div>;
 
