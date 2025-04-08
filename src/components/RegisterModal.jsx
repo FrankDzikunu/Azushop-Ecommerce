@@ -31,7 +31,7 @@ const RegisterModal = ({ onClose, setUser, openLogin }) => {
   
     try {
       setLoading(true);
-      const response = await API.post(
+      await API.post(
         "/api/register/",
         { name, email, password },
         {
@@ -39,10 +39,9 @@ const RegisterModal = ({ onClose, setUser, openLogin }) => {
         }
       );
   
-      const data = response.data;
-      localStorage.setItem("user", JSON.stringify(data));
-      setUser(data);
+      // 👇 Registration successful — now show login modal
       onClose();
+      openLogin();
     } catch (err) {
       setError(err.response?.data?.detail || "Registration failed");
     } finally {
