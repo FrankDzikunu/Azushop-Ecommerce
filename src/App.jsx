@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 import Home from "./pages/Home";
 import Shop from "./pages/Shop";
@@ -20,8 +20,8 @@ import MyOrdersDetails from "./pages/MyOrdersDetails";
 
 function App() {
   return (
-    <Router>
-      <SpeedInsights /> 
+    <>
+      <SpeedInsights />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/shop" element={<Shop />} />
@@ -40,7 +40,7 @@ function App() {
         <Route path="/myorders/:id" element={<MyOrders />} />
         <Route path="/admin/viewmyorder/:id" element={<MyOrdersDetails />} />
       </Routes>
-    </Router>
+    </>
   );
 }
 
