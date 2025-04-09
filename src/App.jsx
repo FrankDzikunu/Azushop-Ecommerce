@@ -1,4 +1,5 @@
-import { Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 import Home from "./pages/Home";
 import Shop from "./pages/Shop";
 import Cart from "./pages/Cart";
@@ -19,24 +20,27 @@ import MyOrdersDetails from "./pages/MyOrdersDetails";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-      <Route path="/shop" element={<Shop />} />
-      <Route path="/cart" element={<Cart />} />
-      <Route path="/favourite" element={<Favourite />} />
-      <Route path="/checkout" element={<Checkout />} />
-      <Route path="/productdetails/:id" element={<ProductDetails />} />
-      <Route path="/admin/products" element={<AdminProductsPage />} />
-      <Route path="/admin/createproduct" element={<AdminCreateProductPage />} />
-      <Route path="/admin/updateproduct/:id" element={<AdminProductDetailsPage />} />
-      <Route path="/admin/categories" element={<AdminCategoryPage />} />
-      <Route path="/profile" element={<Profile />} />
-      <Route path="/admin/users" element={<AdminUsersPage />} />
-      <Route path="/admin/orders" element={<AdminOrdersPage />} />
-      <Route path="/admin/orders/:id" element={<AdminOrderDetailsPage />} />
-      <Route path="/myorders/:id" element={<MyOrders />} />
-      <Route path="/admin/viewmyorder/:id" element={<MyOrdersDetails />} />
-    </Routes>
+    <Router>
+      <SpeedInsights /> 
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/shop" element={<Shop />} />
+        <Route path="/cart" element={<Cart />} />
+        <Route path="/favourite" element={<Favourite />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/productdetails/:id" element={<ProductDetails />} />
+        <Route path="/admin/products" element={<AdminProductsPage />} />
+        <Route path="/admin/createproduct" element={<AdminCreateProductPage />} />
+        <Route path="/admin/updateproduct/:id" element={<AdminProductDetailsPage />} />
+        <Route path="/admin/categories" element={<AdminCategoryPage />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/admin/users" element={<AdminUsersPage />} />
+        <Route path="/admin/orders" element={<AdminOrdersPage />} />
+        <Route path="/admin/orders/:id" element={<AdminOrderDetailsPage />} />
+        <Route path="/myorders/:id" element={<MyOrders />} />
+        <Route path="/admin/viewmyorder/:id" element={<MyOrdersDetails />} />
+      </Routes>
+    </Router>
   );
 }
 
